@@ -31,14 +31,14 @@ void URayInput::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UE_LOG(LogRayInput, Log, TEXT("RayInput Tick"));
+	//UE_LOG(LogRayInput, Log, TEXT("RayInput Tick"));
 	// ...
 	Process();
 }
 
 void URayInput::Process()
 {
-	GLog->Log("Ray Process\n");
+	//GLog->Log("Ray Process\n");
 	FVector RayStart;
 	FVector RayEnd;
 	FHitResult HitResult;
@@ -67,15 +67,20 @@ void URayInput::Process()
 					if (LastRayInteractiveComponent != nullptr)
 					{
 						LastRayInteractiveComponent->OnRayExit(HitResult.ImpactPoint, HitResult.GetComponent());
-					}					
+					}
 				}
 
 				//current enter
 				URayInteractiveComponent* RayInteractiveComponent = CurrentActor->FindComponentByClass<URayInteractiveComponent>();
 				if (RayInteractiveComponent != nullptr)
 				{
+					UE_LOG(LogRayInput, Log, TEXT("RayInput Have"));
 					RayInteractiveComponent->OnRayEnter(HitResult.ImpactPoint, HitResult.GetComponent(), HitResult);
 				}				
+				else
+				{
+					UE_LOG(LogRayInput, Log, TEXT("RayInput No"));
+				}
 			}
 			else
 			{
