@@ -47,7 +47,11 @@ void URayInput::Process()
 	{
 		//ignore caster
 		TArray<AActor*> ignores;
-		ignores.Push(Caster->GetOwner());
+
+		if (Caster != nullptr)
+		{
+			ignores.Push(Caster->GetOwner());
+		}		
 
 		//check hit actor
 		if (GetHitResult(RayStart, RayEnd, ignores, HitResult))
