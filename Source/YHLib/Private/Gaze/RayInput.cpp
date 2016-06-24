@@ -60,21 +60,31 @@ void URayInput::Process()
 
 			if (LastHitActor != CurrentActor)
 			{
-				if (LastHitActor != NULL) {
+				if (LastHitActor != NULL)
+				{
 					//last response exit
 					URayInteractiveComponent* LastRayInteractiveComponent = LastHitActor->FindComponentByClass<URayInteractiveComponent>();
-					LastRayInteractiveComponent->OnRayExit(HitResult.ImpactPoint, HitResult.GetComponent());
+					if (LastRayInteractiveComponent != nullptr)
+					{
+						LastRayInteractiveComponent->OnRayExit(HitResult.ImpactPoint, HitResult.GetComponent());
+					}					
 				}
 
 				//current enter
 				URayInteractiveComponent* RayInteractiveComponent = CurrentActor->FindComponentByClass<URayInteractiveComponent>();
-				RayInteractiveComponent->OnRayEnter(HitResult.ImpactPoint, HitResult.GetComponent(), HitResult);
+				if (RayInteractiveComponent != nullptr)
+				{
+					RayInteractiveComponent->OnRayEnter(HitResult.ImpactPoint, HitResult.GetComponent(), HitResult);
+				}				
 			}
 			else
 			{
 				//current stay
 				URayInteractiveComponent* RayInteractiveComponent = CurrentActor->FindComponentByClass<URayInteractiveComponent>();
-				RayInteractiveComponent->OnRayStay(HitResult.ImpactPoint, HitResult.GetComponent(), HitResult);
+				if (RayInteractiveComponent != nullptr)
+				{
+					RayInteractiveComponent->OnRayStay(HitResult.ImpactPoint, HitResult.GetComponent(), HitResult);
+				}
 			}
 		}
 	}
