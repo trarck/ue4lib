@@ -2,24 +2,19 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "Gaze/RayInput.h"
 #include "GazeInput.generated.h"
 
-UCLASS()
-class UGazeInput : public UActorComponent
+/**
+ *
+ */
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class UGazeInput : public URayInput
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	UGazeInput();
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
+public:
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual bool GetRayPointer(FVector& RayStart, FVector& RayEnd) override;
 
-	bool GetHitResultFromRay(FVector Start,FVector End, TArray<AActor*>* OptionalListOfIgnoredActors, FHitResult& Hit);
-	
 };

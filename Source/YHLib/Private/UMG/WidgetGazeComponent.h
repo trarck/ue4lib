@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "Gaze/GazeComponent.h"
+#include "Gaze/RayInteractiveComponent.h"
 #include "WidgetGazeComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UWidgetGazeComponent : public UGazeComponent
+class UWidgetGazeComponent : public URayInteractiveComponent
 {
 	GENERATED_BODY()
 
@@ -24,11 +24,11 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Gaze")
 	void OnGaze(FVector WorldLocation,class UActorComponent* ActorComponent);
 	
-	virtual void OnGazeEnter(FVector HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
+	virtual void OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
 
-	virtual void OnGazeStay(FVector HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
+	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
 
-	virtual void OnGazeExit(FVector HitLocation, UActorComponent* HitComponent) override;
+	virtual void OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent) override;
 
 protected:
 };

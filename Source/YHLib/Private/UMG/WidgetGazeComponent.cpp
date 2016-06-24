@@ -57,17 +57,55 @@ void UWidgetGazeComponent::OnGaze(FVector WorldLocation,UActorComponent* ActorCo
 	}
 }
 
-void UWidgetGazeComponent::OnGazeEnter(FVector HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+{
+	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
+
+	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
+	if (WidgetPathUnderFinger.IsValid())
+	{
+		FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
+
+		FVector2D LocalHitLocation;
+		WidgetComponent->GetLocalHitLocation(HitLocation, LocalHitLocation);
+
+		TSet<FKey> PressedButtons;
+		FPointerEvent PointerEvent(
+			1,
+			LocalHitLocation,
+			LastLocalHitLocation,
+			LocalHitLocation - LastLocalHitLocation,
+			PressedButtons,
+			FModifierKeysState());
+
+		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
+	}
+}
+
+void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
 
 }
 
-void UWidgetGazeComponent::OnGazeStay(FVector HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void UWidgetGazeComponent::OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent)
 {
+	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 
-}
+	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
+	if (WidgetPathUnderFinger.IsValid())
+	{
+		FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
 
-void UWidgetGazeComponent::OnGazeExit(FVector HitLocation, UActorComponent* HitComponent)
-{
+		TSet<FKey> PressedButtons;
 
+		FPointerEvent PointerEvent(
+			1,
+			LastLocalHitLocation,
+			LastLocalHitLocation,
+			FVector2D::ZeroVector,
+			PressedButtons,
+			FModifierKeysState());
+
+		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
+	}
 }

@@ -3,44 +3,17 @@
 #include "YHLibPrivatePCH.h"
 #include "GazeInput.h"
 
-
-// Sets default values
-UGazeInput::UGazeInput()
+bool UGazeInput::GetRayPointer(FVector& RayStart, FVector& RayEnd)
 {
-	bWantsBeginPlay = true;
-	PrimaryComponentTick.bCanEverTick = true;
+	APlayerCameraManager* PlayerCameraManager= UGameplayStatics::GetPlayerCameraManager(this, 0);
 
-}
-
-void UGazeInput::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-
-}
-
-
-// Called every frame
-void UGazeInput::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-bool UGazeInput::GetHitResultFromRay(FVector Start, FVector End, TArray<AActor*>* OptionalListOfIgnoredActors, FHitResult& Hit)
-{
-
-	const bool bTraceComplex = true;
-	FCollisionQueryParams TraceParams(NAME_None, bTraceComplex, nullptr);
-
-	if (OptionalListOfIgnoredActors != nullptr)
+	if (PlayerCameraManager)
 	{
-		TraceParams.AddIgnoredActors(*OptionalListOfIgnoredActors);
+		FVector ForwardVector = PlayerCameraManager->GetCameraRotation().Quaternion().GetForwardVector();
+		RayStart = PlayerCameraManager->GetCameraLocation();
+		RayEnd = RayStart + ForwardVector*RayLength;
+		return true;
 	}
 
-	FCollisionObjectQueryParams EverythingButGizmos(FCollisionObjectQueryParams::AllObjects);
-	EverythingButGizmos.RemoveObjectTypesToQuery(COLLISION_GIZMO);
-	return GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, EverythingButGizmos, TraceParams);
+	return false;
 }
