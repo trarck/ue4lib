@@ -12,8 +12,14 @@ class URayInput : public UActorComponent
 	
 public:	
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
 	float RayLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
+	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
+	bool bIgnoreSelf;
 
 	// Sets default values for this actor's properties
 	URayInput();
@@ -30,23 +36,33 @@ public:
 	*/
 	virtual void Process();
 	
+	/** Calc ray start point and end point .use for screen component as caster define*/
 	virtual bool GetRayPointer(FVector& RayStart, FVector& RayEnd);
 	
-	UFUNCTION(BlueprintCallable, Category = "Input")
+	/**
+	* Get collision hit result
+	* @param	RayStart	Start point
+	* @param	RayEnd 	End point
+	* @param	OptionalListOfIgnoredActors 	Actors not collions .
+	* @param Hit HitReult
+	* @return 	HaveHit bool
+	*/
+	UFUNCTION(BlueprintCallable, Category = "RayInput")
 	bool GetHitResult(const FVector& RayStart,const FVector& RayEnd, const TArray<AActor*>& OptionalListOfIgnoredActors, FHitResult& Hit);	
 	
-	UFUNCTION(BlueprintCallable,Category="Input" )
+	/** Set caster componet. normal is ray come from*/
+	UFUNCTION(BlueprintCallable,Category="RayInput" )
 	void SetCaster(USceneComponent* CasterComponent);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "RayInput")
 	void AddIgnoreActor(AActor* Actor);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "RayInput")
 	void ClearIgnores();
 
 protected:
 
-	//caste ray component contain transform
+	//caste ray component contain transform. mustbe camera,vr handle or others.
 	UPROPERTY()
 	USceneComponent* Caster;
 
@@ -55,6 +71,7 @@ protected:
 
 	//FVector LastHitPoint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Input")
+	//Actors don't check
+	UPROPERTY(BlueprintReadWrite, Category = "RayInput")
 	TArray<AActor*> DefaultIgnores;
 };

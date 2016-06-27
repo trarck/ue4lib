@@ -11,7 +11,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogRayInput, Log, All);
 URayInput::URayInput()
 	:Caster(nullptr),
 	LastHitComponent(nullptr),
-	RayLength(1000)
+	RayLength(1000),
+	bIgnoreSelf(true)
 {
 	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = true;
@@ -21,7 +22,10 @@ URayInput::URayInput()
 void URayInput::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (bIgnoreSelf)
+	{
+		AddIgnoreActor(GetOwner());
+	}
 	UE_LOG(LogRayInput, Log, TEXT("RayInput BeginPlay"));
 }
 
@@ -136,9 +140,25 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 
 	//UE_LOG(LogRayInput, Log, TEXT("Ingores %d"), OptionalListOfIgnoredActors.Num());
 
-	FCollisionObjectQueryParams EverythingButGizmos(FCollisionObjectQueryParams::AllObjects);
-	EverythingButGizmos.RemoveObjectTypesToQuery(COLLISION_GIZMO);
-	return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, EverythingButGizmos, TraceParams);
+	//FCollisionObjectQueryParams* ObjectParams;
+
+	if (ObjectTypes.Num()>0)
+	{
+		FCollisionObjectQueryParams ObjectParams(ObjectTypes);
+		return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, ObjectParams, TraceParams);
+		//*ObjectParams = FCollisionObjectQueryParams(ObjectTypes);
+	}
+	else
+	{
+		//EverythingButGizmos
+		FCollisionObjectQueryParams ObjectParams(FCollisionObjectQueryParams::AllObjects);
+		ObjectParams.RemoveObjectTypesToQuery(COLLISION_GIZMO);
+		return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, ObjectParams, TraceParams);
+		 //*ObjectParams= FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects);
+		 //ObjectParams->RemoveObjectTypesToQuery(COLLISION_GIZMO);
+	}
+
+	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);
 }
 
 void URayInput::SetCaster(USceneComponent* CasterComponent)

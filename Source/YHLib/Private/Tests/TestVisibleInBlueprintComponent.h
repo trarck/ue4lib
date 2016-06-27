@@ -18,26 +18,29 @@ public:
 	UPROPERTY()
 	int32 PublicPropOne;
 
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Test")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Test")
 	int32 PublicPropTwo;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,AdvancedDisplay, Category = "Test")
+	int32 PublicPropThree;
+
 	UFUNCTION()
-		void PubFuna();
+	void PubFuna();
 
 	UFUNCTION(BlueprintCallable, Category = "Test")
-		void PubFunb();
+	void PubFunb();
 
 protected:
 
 	UFUNCTION()
-		void ProFuna();
+	void ProFuna();
 
 	UFUNCTION(BlueprintCallable, Category = "Test")
-		void ProFunb();
+	void ProFunb();
 
 	UPROPERTY()
-		int32 ProtecedPropOne;
+	int32 ProtecedPropOne;
 
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Test")
-		int32 ProtecedPropTwo;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Test")
+	int32 ProtecedPropTwo;
 };

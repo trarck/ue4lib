@@ -12,9 +12,19 @@ UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UGazeInput : public URayInput
 {
 	GENERATED_BODY()
-
 public:
+	UGazeInput();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="RayInput")
+	int32 PlayerIndex;
+
+	virtual void BeginPlay() override;
+
+	/** use current player camera */
 	virtual bool GetRayPointer(FVector& RayStart, FVector& RayEnd) override;
 
+protected:
+
+	UPROPERTY()
+	APlayerCameraManager* PlayerCameraManager;
 };
