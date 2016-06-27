@@ -5,6 +5,8 @@
 
 #include "WidgetComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogWidgetGaze, Log, All);
+
 // Sets default values for this component's properties
 UWidgetGazeComponent::UWidgetGazeComponent()
 {
@@ -59,6 +61,7 @@ void UWidgetGazeComponent::OnGaze(FVector WorldLocation,UActorComponent* ActorCo
 
 void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
+	UE_LOG(LogWidgetGaze, Log, TEXT("OnRayEndter"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 
 	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
@@ -84,11 +87,7 @@ void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponen
 
 void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
-
-}
-
-void UWidgetGazeComponent::OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent)
-{
+	UE_LOG(LogWidgetGaze, Log, TEXT("OnRayStay"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 
 	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
@@ -96,16 +95,39 @@ void UWidgetGazeComponent::OnRayExit(const FVector& HitLocation, UActorComponent
 	{
 		FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
 
-		TSet<FKey> PressedButtons;
+		FVector2D LocalHitLocation;
+		WidgetComponent->GetLocalHitLocation(HitLocation, LocalHitLocation);
 
+		TSet<FKey> PressedButtons;
 		FPointerEvent PointerEvent(
 			1,
+			LocalHitLocation,
 			LastLocalHitLocation,
-			LastLocalHitLocation,
-			FVector2D::ZeroVector,
+			LocalHitLocation - LastLocalHitLocation,
 			PressedButtons,
 			FModifierKeysState());
 
 		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
 	}
+}
+
+void UWidgetGazeComponent::OnRayExit(UActorComponent* HitComponent)
+{
+	UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
+	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
+	
+	FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
+
+	TSet<FKey> PressedButtons;
+
+	FPointerEvent PointerEvent(
+		1,
+		LastLocalHitLocation,
+		LastLocalHitLocation,
+		FVector2D::ZeroVector,
+		PressedButtons,
+		FModifierKeysState());
+
+	FSlateApplication::Get().RoutePointerMoveEvent(FWidgetPath(), PointerEvent, false);
+	
 }

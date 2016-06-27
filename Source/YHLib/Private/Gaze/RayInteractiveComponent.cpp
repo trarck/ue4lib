@@ -22,7 +22,7 @@ void URayInteractiveComponent::OnRayStay(const FVector& HitLocation, UActorCompo
 
 }
 
-void URayInteractiveComponent::OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent)
+void URayInteractiveComponent::OnRayExit(UActorComponent* HitComponent)
 {
 
 }

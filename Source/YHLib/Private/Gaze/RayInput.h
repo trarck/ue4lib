@@ -11,6 +11,10 @@ class URayInput : public UActorComponent
 	GENERATED_BODY()
 	
 public:	
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Input")
+	float RayLength;
+
 	// Sets default values for this actor's properties
 	URayInput();
 
@@ -20,6 +24,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/**
+	* only point event  (move)
+	* TODO:suport Input Action
+	*/
 	virtual void Process();
 	
 	virtual bool GetRayPointer(FVector& RayStart, FVector& RayEnd);
@@ -30,15 +38,23 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Input" )
 	void SetCaster(USceneComponent* CasterComponent);
 
-protected:
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void AddIgnoreActor(AActor* Actor);
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Input")
-	float RayLength;
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void ClearIgnores();
+
+protected:
 
 	//caste ray component contain transform
 	UPROPERTY()
 	USceneComponent* Caster;
 
 	UPROPERTY()
-	AActor* LastHitActor;
+	UActorComponent* LastHitComponent;
+
+	//FVector LastHitPoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Input")
+	TArray<AActor*> DefaultIgnores;
 };

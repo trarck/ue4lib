@@ -28,7 +28,7 @@ public:
 
 	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
 
-	virtual void OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent) override;
+	virtual void OnRayExit(UActorComponent* HitComponent) override;
 
 protected:
 };

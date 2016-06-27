@@ -19,5 +19,5 @@ public:
 
 	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
 
-	virtual void OnRayExit(const FVector& HitLocation, UActorComponent* HitComponent);	
+	virtual void OnRayExit(UActorComponent* HitComponent);	
 };
