@@ -15,7 +15,11 @@ URayInput::URayInput()
 	bIgnoreSelf(true)
 {
 	bWantsBeginPlay = true;
+
+	//set tick group.if use default then RayStart and RayEnd maybe the same as renderer.
+	PrimaryComponentTick.TickGroup = TG_PostUpdateWork;
 	PrimaryComponentTick.bCanEverTick = true;
+
 	UE_LOG(LogRayInput, Log, TEXT("RayInput Construct"));
 }
 
@@ -45,10 +49,12 @@ void URayInput::Process()
 	//GLog->Log("Ray Process\n");
 	FVector RayStart;
 	FVector RayEnd;
-	FHitResult HitResult;
+
 
 	if (GetRayPointer(RayStart, RayEnd))
 	{
+		FHitResult HitResult;
+
 		//ignore caster
 		//TArray<AActor*> ignores;
 
@@ -58,7 +64,8 @@ void URayInput::Process()
 		//}		
 
 		//check hit actor
-		if (GetHitResult(RayStart, RayEnd, DefaultIgnores, HitResult))
+		bool bHit = GetHitResult(RayStart, RayEnd, DefaultIgnores, HitResult);
+		if (bHit)
 		{
 			UActorComponent* CurrentComponent = HitResult.GetComponent();
 
@@ -80,7 +87,7 @@ void URayInput::Process()
 				{
 					//UE_LOG(LogRayInput, Log, TEXT("RayInput[%s] Have"), *(HitResult.GetComponent()->GetName()));
 					RayInteractiveComponent->OnRayEnter(HitResult.ImpactPoint, CurrentComponent, HitResult);
-				}				
+				}
 				else
 				{
 					//UE_LOG(LogRayInput, Log, TEXT("RayInput[%s] No"), *(HitResult.GetComponent()->GetName()));
@@ -101,7 +108,7 @@ void URayInput::Process()
 		}
 		else if (LastHitComponent != nullptr)
 		{
-			
+
 			//last response exit
 			URayInteractiveComponent* LastRayInteractiveComponent = LastHitComponent->GetOwner()->FindComponentByClass<URayInteractiveComponent>();
 			if (LastRayInteractiveComponent != nullptr)
@@ -111,6 +118,7 @@ void URayInput::Process()
 
 			LastHitComponent = nullptr;
 		}
+		OnProcessRay.Broadcast(bHit, RayStart, RayEnd, HitResult);
 	}
 }
 
@@ -142,7 +150,7 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 
 	//FCollisionObjectQueryParams* ObjectParams;
 
-	if (ObjectTypes.Num()>0)
+	if (ObjectTypes.Num() > 0)
 	{
 		FCollisionObjectQueryParams ObjectParams(ObjectTypes);
 		return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, ObjectParams, TraceParams);
@@ -154,8 +162,8 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 		FCollisionObjectQueryParams ObjectParams(FCollisionObjectQueryParams::AllObjects);
 		ObjectParams.RemoveObjectTypesToQuery(COLLISION_GIZMO);
 		return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, ObjectParams, TraceParams);
-		 //*ObjectParams= FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects);
-		 //ObjectParams->RemoveObjectTypesToQuery(COLLISION_GIZMO);
+		//*ObjectParams= FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects);
+		//ObjectParams->RemoveObjectTypesToQuery(COLLISION_GIZMO);
 	}
 
 	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);

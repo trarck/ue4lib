@@ -5,6 +5,8 @@
 #include "Engine.h"
 #include "RayInput.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult);
+
 UCLASS(Blueprintable,ClassGroup = (Input), meta = (BlueprintSpawnableComponent))
 class URayInput : public UActorComponent
 {
@@ -20,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
 	bool bIgnoreSelf;
+
+	UPROPERTY(BlueprintAssignable, Category = "RayInput")
+	FProcessRaySignature OnProcessRay;
 
 	// Sets default values for this actor's properties
 	URayInput();
