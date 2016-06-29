@@ -15,7 +15,7 @@ class UGazeInput : public URayInput
 public:
 	UGazeInput();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="RayInput")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Laser")
 	int32 PlayerIndex;
 
 	virtual void BeginPlay() override;

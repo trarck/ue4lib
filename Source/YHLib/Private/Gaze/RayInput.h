@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "RayInput.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult,bool,bHaveRay);
 
 UCLASS(Blueprintable,ClassGroup = (Input), meta = (BlueprintSpawnableComponent))
 class URayInput : public UActorComponent
@@ -14,16 +14,16 @@ class URayInput : public UActorComponent
 	
 public:	
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser")
 	float RayLength;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser")
 	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RayInput")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser")
 	bool bIgnoreSelf;
 
-	UPROPERTY(BlueprintAssignable, Category = "RayInput")
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
 	FProcessRaySignature OnProcessRay;
 
 	// Sets default values for this actor's properties
@@ -52,23 +52,23 @@ public:
 	* @param Hit HitReult
 	* @return 	HaveHit bool
 	*/
-	UFUNCTION(BlueprintCallable, Category = "RayInput")
+	UFUNCTION(BlueprintCallable, Category = "Laser")
 	bool GetHitResult(const FVector& RayStart,const FVector& RayEnd, const TArray<AActor*>& OptionalListOfIgnoredActors, FHitResult& Hit);	
 	
 	/** Set caster componet. normal is ray come from*/
-	UFUNCTION(BlueprintCallable,Category="RayInput" )
+	UFUNCTION(BlueprintCallable,Category="Laser" )
 	void SetCaster(USceneComponent* CasterComponent);
 
-	UFUNCTION(BlueprintCallable, Category = "RayInput")
+	UFUNCTION(BlueprintCallable, Category = "Laser")
 	void AddIgnoreActor(AActor* Actor);
 
-	UFUNCTION(BlueprintCallable, Category = "RayInput")
+	UFUNCTION(BlueprintCallable, Category = "Laser")
 	void ClearIgnores();
 
 protected:
 
 	//caste ray component contain transform. mustbe camera,vr handle or others.
-	UPROPERTY()
+	//UPROPERTY()
 	USceneComponent* Caster;
 
 	UPROPERTY()
@@ -77,6 +77,6 @@ protected:
 	//FVector LastHitPoint;
 
 	//Actors don't check
-	UPROPERTY(BlueprintReadWrite, Category = "RayInput")
+	UPROPERTY(BlueprintReadWrite, Category = "Laser")
 	TArray<AActor*> DefaultIgnores;
 };

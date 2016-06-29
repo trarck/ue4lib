@@ -11,7 +11,6 @@ URayInteractiveComponent::URayInteractiveComponent()
 }
 
 
-
 void URayInteractiveComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
 

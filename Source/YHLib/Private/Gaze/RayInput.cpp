@@ -49,19 +49,11 @@ void URayInput::Process()
 	//GLog->Log("Ray Process\n");
 	FVector RayStart;
 	FVector RayEnd;
-
+	FHitResult HitResult;
 
 	if (GetRayPointer(RayStart, RayEnd))
 	{
-		FHitResult HitResult;
 
-		//ignore caster
-		//TArray<AActor*> ignores;
-
-		//if (Caster != nullptr)
-		//{
-		//	ignores.Push(Caster->GetOwner());
-		//}		
 
 		//check hit actor
 		bool bHit = GetHitResult(RayStart, RayEnd, DefaultIgnores, HitResult);
@@ -118,7 +110,11 @@ void URayInput::Process()
 
 			LastHitComponent = nullptr;
 		}
-		OnProcessRay.Broadcast(bHit, RayStart, RayEnd, HitResult);
+		OnProcessRay.Broadcast(bHit, RayStart, RayEnd, HitResult, true);
+	}
+	else
+	{
+		OnProcessRay.Broadcast(false, RayStart, RayEnd, HitResult, false);
 	}
 }
 
