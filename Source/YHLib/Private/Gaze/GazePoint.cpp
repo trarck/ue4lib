@@ -152,7 +152,8 @@ void UGazePoint::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& 
 
 		if (bHit)
 		{
-			FRotator Rotator = FRotationMatrix::MakeFromX(Start-HitResult.ImpactPoint ).Rotator();
+			FRotator Rotator = FRotationMatrix::MakeFromX(Start - HitResult.ImpactPoint).Rotator();
+			Rotator.Pitch -= 90;
 
 			PointerMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
 			PointerMeshComponent->SetWorldRotation(Rotator);
@@ -164,8 +165,10 @@ void UGazePoint::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& 
 		else
 		{
 			FRotator Rotator = FRotationMatrix::MakeFromX(Start - End).Rotator();
+			Rotator.Pitch -= 90;
+			
 			PointerMeshComponent->SetWorldLocation(End);
-			PointerMeshComponent->SetWorldRotation(Rotator);
+			PointerMeshComponent->SetWorldRotation(Rotator );
 
 			HoverMeshComponent->SetVisibility(false);
 		}
