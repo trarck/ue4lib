@@ -63,10 +63,10 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
 	UPointLightComponent* HoverPointLightComponent;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
+	UPROPERTY()
 	UMaterialInstanceDynamic* LaserPointerMID;
 	
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
+	UPROPERTY()
 	UMaterialInstanceDynamic* TranslucentLaserPointerMID;
 
 	float WorldScaleFactor;
