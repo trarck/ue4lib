@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "YHLibPrivatePCH.h"
-#include "RayCaster.h"
+#include "RayLaser.h"
 
 #include "RayInput.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogRayLaser, Log, All);
 
 // Sets default values for this component's properties
-URayCaster::URayCaster()
+URayLaser::URayLaser()
 	:LaserPointerRadius(0.5f),
 	LaserPointerHoverBallRadius(1.5f),
 	LaserPointerLightRadius(20.0f),
@@ -27,9 +27,9 @@ URayCaster::URayCaster()
 	//PrimaryComponentTick.bCanEverTick = true;
 }
 
-void URayCaster::CreateLaserPointerMesh()
+void URayLaser::CreateLaserPointerMesh()
 {
-	UE_LOG(LogRayCaster, Log, TEXT("Create Laser Pointer Mesh"));
+	UE_LOG(LogRayLaser, Log, TEXT("Create Laser Pointer Mesh"));
 	AActor* Owner = GetOwner();
 
 	// Laser pointer
@@ -68,9 +68,9 @@ void URayCaster::CreateLaserPointerMesh()
 }
 
 
-void URayCaster::CreateHoverMesh()
+void URayLaser::CreateHoverMesh()
 {
-	UE_LOG(LogRayCaster, Log, TEXT("Create Hover Mesh"));
+	UE_LOG(LogRayLaser, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
 	HoverMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("HoverMeshComponent"));
 	HoverMeshComponent->SetupAttachment(this);
@@ -87,10 +87,10 @@ void URayCaster::CreateHoverMesh()
 	HoverMeshComponent->SetVisibility(false);
 }
 
-void URayCaster::CreateHoverPointLight()
+void URayLaser::CreateHoverPointLight()
 {
 
-	UE_LOG(LogRayCaster, Log, TEXT("Create Hover Point Light"));
+	UE_LOG(LogRayLaser, Log, TEXT("Create Hover Point Light"));
 	// Add a light!
 	HoverPointLightComponent = NewObject<UPointLightComponent>(GetOwner(), TEXT("HoverPointLightComponent"));
 
@@ -109,7 +109,7 @@ void URayCaster::CreateHoverPointLight()
 	HoverPointLightComponent->SetVisibility(false);
 }
 
-void URayCaster::LoadFromChildren()
+void URayLaser::LoadFromChildren()
 {
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
 	for (int i = 0; i < Children.Num(); ++i)
@@ -142,7 +142,7 @@ void URayCaster::LoadFromChildren()
 }
 
 // Called when the game starts
-void URayCaster::BeginPlay()
+void URayLaser::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -162,7 +162,7 @@ void URayCaster::BeginPlay()
 		TranslucentLaserPointerMID = UMaterialInstanceDynamic::Create(LaserPointerMeshComponent->GetMaterial(1), GetTransientPackage());
 		LaserPointerMeshComponent->SetMaterial(1, TranslucentLaserPointerMID);
 
-		UE_LOG(LogRayCaster, Log, TEXT("BeginPlay:%d,%d"),LaserPointerMID==nullptr,TranslucentLaserPointerMID==nullptr);
+		UE_LOG(LogRayLaser, Log, TEXT("BeginPlay:%d,%d"),LaserPointerMID==nullptr,TranslucentLaserPointerMID==nullptr);
 	}
 
 	if (HoverMeshComponent == nullptr)
@@ -176,16 +176,16 @@ void URayCaster::BeginPlay()
 	}
 }
 
-void URayCaster::RegisterProcess(URayInput* RayInput)
+void URayLaser::RegisterProcess(URayInput* RayInput)
 {
 	if (RayInput)
 	{
-		UE_LOG(LogRayCaster, Log, TEXT("RegisterProcess"));
-		RayInput->OnProcessRay.AddDynamic(this, &URayCaster::ProcessRayHit);
+		UE_LOG(LogRayLaser, Log, TEXT("RegisterProcess"));
+		RayInput->OnProcessRay.AddDynamic(this, &URayLaser::ProcessRayHit);
 	}
 }
 
-void URayCaster::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bHaveRay)
+void URayLaser::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bHaveRay)
 {
 	if (bHaveRay)
 	{
@@ -246,7 +246,7 @@ void URayCaster::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& 
 	}
 }
 
-void URayCaster::SetLaserVisuals(const FLinearColor& NewColor, const float CrawlFade, const float CrawlSpeed)
+void URayLaser::SetLaserVisuals(const FLinearColor& NewColor, const float CrawlFade, const float CrawlSpeed)
 {
 	static FName StaticLaserColorParameterName("LaserColor");
 	LaserPointerMID->SetVectorParameterValue(StaticLaserColorParameterName, NewColor);

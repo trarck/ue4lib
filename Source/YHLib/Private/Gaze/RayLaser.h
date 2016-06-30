@@ -3,17 +3,17 @@
 #pragma once
 
 #include "Engine.h"
-#include "RayCaster.generated.h"
+#include "RayLaser.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class URayCaster : public USceneComponent
+class URayLaser : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	URayCaster();
+	URayLaser();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
