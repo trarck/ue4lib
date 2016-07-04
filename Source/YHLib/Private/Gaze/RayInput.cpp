@@ -53,7 +53,7 @@ void URayInput::Process()
 
 	if (GetRayPointer(RayStart, RayEnd))
 	{
-
+		bool bBeginHit = false;
 
 		//check hit actor
 		bool bHit = GetHitResult(RayStart, RayEnd, DefaultIgnores, HitResult);
@@ -86,6 +86,8 @@ void URayInput::Process()
 				}
 
 				LastHitComponent = CurrentComponent;
+
+				bBeginHit = true;
 			}
 			else
 			{
@@ -110,11 +112,11 @@ void URayInput::Process()
 
 			LastHitComponent = nullptr;
 		}
-		OnProcessRay.Broadcast(bHit, RayStart, RayEnd, HitResult, true);
+		OnProcessRay.Broadcast(bHit, RayStart, RayEnd, HitResult, bBeginHit,true);
 	}
 	else
 	{
-		OnProcessRay.Broadcast(false, RayStart, RayEnd, HitResult, false);
+		OnProcessRay.Broadcast(false, RayStart, RayEnd, HitResult,false, false);
 	}
 }
 

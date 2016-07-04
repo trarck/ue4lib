@@ -20,4 +20,12 @@ public:
 	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
 
 	virtual void OnRayExit(UActorComponent* HitComponent);	
+
+	//if actor have special logic check hover like umg.
+	virtual bool IsHover();
+
+	//from sub target to another target.if no sub always return true
+	virtual bool IsHoverChanged();
+
+	virtual bool IsProtrudeThrough();
 };

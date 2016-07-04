@@ -185,7 +185,7 @@ void URayLaser::RegisterProcess(URayInput* RayInput)
 	}
 }
 
-void URayLaser::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bHaveRay)
+void URayLaser::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit, bool bHaveRay)
 {
 	if (bHaveRay)
 	{

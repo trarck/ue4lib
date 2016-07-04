@@ -21,5 +21,14 @@ public:
 
 	virtual void OnRayExit(UActorComponent* HitComponent) override;
 
+	virtual bool IsHover() override;
+
+	virtual bool IsHoverChanged() override;
+	//default is button
+	virtual bool IsWidgetInteractive(TSharedRef<SWidget> Widget);
+
 protected:
+	bool bWidgetHover;
+	bool bWidgetChange;
+	FWidgetAndPointer CachedWidgetAndPointer;
 };

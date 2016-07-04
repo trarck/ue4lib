@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "RayInput.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult,bool,bHaveRay);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult, bool, bBeginHit,bool,bHaveRay);
 
 UCLASS(Blueprintable,ClassGroup = (Input), meta = (BlueprintSpawnableComponent))
 class URayInput : public UActorComponent

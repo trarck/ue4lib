@@ -22,7 +22,7 @@ public:
 	virtual void RegisterProcess(class URayInput* RayInput);
 
 	UFUNCTION()
-	void ProcessRayHit( bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult,bool bHaveRay);
+	void ProcessRayHit( bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult,bool bBeginHit,bool bHaveRay);
 
 protected:
 

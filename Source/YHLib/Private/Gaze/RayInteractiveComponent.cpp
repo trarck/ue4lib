@@ -25,3 +25,18 @@ void URayInteractiveComponent::OnRayExit(UActorComponent* HitComponent)
 {
 
 }
+
+bool URayInteractiveComponent::IsHover()
+{
+	return true;
+}
+
+bool URayInteractiveComponent::IsHoverChanged()
+{
+	return true;
+}
+
+bool URayInteractiveComponent::IsProtrudeThrough()
+{
+	return true;
+}

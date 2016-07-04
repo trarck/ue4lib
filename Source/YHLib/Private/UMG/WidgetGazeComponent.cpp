@@ -4,11 +4,14 @@
 #include "WidgetGazeComponent.h"
 
 #include "WidgetComponent.h"
+#include "WidgetGazeActionComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWidgetGaze, Log, All);
 
 // Sets default values for this component's properties
 UWidgetGazeComponent::UWidgetGazeComponent()
+	:bWidgetHover(false),
+	bWidgetChange(false)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -23,8 +26,10 @@ void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponen
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayEndter"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
+	
+	TArray<FWidgetAndPointer> widgets = WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false);
 
-	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
+	FWidgetPath WidgetPathUnderFinger = FWidgetPath(widgets);
 	if (WidgetPathUnderFinger.IsValid())
 	{
 		FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
@@ -43,14 +48,20 @@ void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponen
 
 		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
 	}
+
+	if (widgets.Num() > 0)
+	{
+		CachedWidgetAndPointer = widgets.Last();
+		bWidgetHover = IsWidgetInteractive(CachedWidgetAndPointer.Widget);
+	}
 }
 
 void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayStay"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
-
-	FWidgetPath WidgetPathUnderFinger = FWidgetPath(WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false));
+	TArray<FWidgetAndPointer> widgets = WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false);
+	FWidgetPath WidgetPathUnderFinger = FWidgetPath(widgets);
 	if (WidgetPathUnderFinger.IsValid())
 	{
 		FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
@@ -68,6 +79,20 @@ void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent
 			FModifierKeysState());
 
 		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
+		if (widgets.Num() > 0)
+		{
+			if (!(CachedWidgetAndPointer == widgets.Last()))
+			{
+				CachedWidgetAndPointer = widgets.Last();	
+				bWidgetChange = true;
+			}
+			else
+			{
+				bWidgetChange = false;
+			}
+
+			bWidgetHover = IsWidgetInteractive(CachedWidgetAndPointer.Widget);
+		}
 	}
 }
 
@@ -89,5 +114,19 @@ void UWidgetGazeComponent::OnRayExit(UActorComponent* HitComponent)
 		FModifierKeysState());
 
 	FSlateApplication::Get().RoutePointerMoveEvent(FWidgetPath(), PointerEvent, false);
-	
+}
+
+bool UWidgetGazeComponent::IsHover()
+{
+	return bWidgetHover;
+}
+
+bool UWidgetGazeComponent::IsHoverChanged()
+{
+	return bWidgetChange;
+}
+
+bool UWidgetGazeComponent::IsWidgetInteractive(TSharedRef<SWidget> Widget)
+{
+	return Widget->IsInteractable();
 }
