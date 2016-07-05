@@ -17,7 +17,6 @@ UGazePointer::UGazePointer()
 	StayDuration(0.5f),
 	GazeColor(FLinearColor::Blue),
 	Elapsed(0),
-	bIsHover(false),
 	Duration(1),
 	PointerMeshComponent(nullptr),
 	HoverMeshComponent(nullptr),
@@ -25,8 +24,6 @@ UGazePointer::UGazePointer()
 	HoverMID(nullptr),
 	GazeActionComponent(nullptr),
 	bChangeColor(false),
-	bShowHover(false),
-	bShowHoverable(false),
 	State(EGazeState::None)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -303,25 +300,22 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 void UGazePointer::StartStay()
 {
 	//UE_LOG(LogRayCaster, Log, TEXT("StartStay"));
-	bIsHover = true;
 	State =EGazeState::Stay;
-	//bShowHover = true;
 	Elapsed = 0;
 	SetHoverPercent(0);
 }
 
 void UGazePointer::EndHover()
 {
-	bIsHover = false;
-	if (bShowHover)
+	if (State >=EGazeState::Hover)
 	{
-		bShowHover = false;
 		HoverMeshComponent->SetVisibility(false);
-		if (bChangeColor)
-		{
-			SetLaserVisuals(GazeColor);
-			bChangeColor = false;
-		}
+	}
+
+	if (bChangeColor)
+	{
+		SetLaserVisuals(GazeColor);
+		bChangeColor = false;
 	}
 
 	State = EGazeState::None;

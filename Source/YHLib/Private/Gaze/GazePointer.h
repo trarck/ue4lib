@@ -84,15 +84,9 @@ protected:
 
 	float Elapsed;
 
-	bool bIsHover;
-
 	float Duration;
 
 	bool bChangeColor;
 
-	bool bShowHover;
-
 	EGazeState State;
-	//after stay show action time down
-	bool bShowHoverable;
 };
