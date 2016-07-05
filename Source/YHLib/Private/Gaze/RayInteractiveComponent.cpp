@@ -33,7 +33,7 @@ bool URayInteractiveComponent::IsHover()
 
 bool URayInteractiveComponent::IsHoverChanged()
 {
-	return true;
+	return false;
 }
 
 bool URayInteractiveComponent::IsProtrudeThrough()

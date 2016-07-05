@@ -197,7 +197,7 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 
 			URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
 
-			//check shoud response gaze
+			//check should response gaze
 			if (RayInteractiveComponent)
 			{
 				bProtrudeThrough = RayInteractiveComponent->IsProtrudeThrough();
@@ -287,6 +287,7 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 
 void UGazePointer::StartHover()
 {
+	//UE_LOG(LogRayCaster, Log, TEXT("StartHover"));
 	bIsHover = true;
 	bShowHover = true;
 	Elapsed = 0;
