@@ -6,12 +6,24 @@
 #include "GazePointer.generated.h"
 
 
+enum class EGazeState : uint8
+{
+	None,
+	//point is on the actor
+	Stay,
+	//after stay duration,action cut down
+	Hover,
+	//action is exec
+	Actioned
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UGazePointer : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
+
 	// Sets default values for this component's properties
 	UGazePointer();
 
@@ -30,7 +42,9 @@ protected:
 	void CreatePointerMesh();
 	void CreateHoverMesh();
 	void LoadFromChildren();
-	void StartHover();
+
+	void StartStay();
+
 	void EndHover();
 
 	void SetLaserVisuals(const FLinearColor& NewColor);
@@ -48,6 +62,9 @@ protected:
 	float ActionDuration;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
+	float StayDuration;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
 	FLinearColor GazeColor;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
@@ -62,7 +79,6 @@ protected:
 	UPROPERTY()
 	UMaterialInstanceDynamic* HoverMID;
 
-
 	UPROPERTY()
 	class UGazeActionComponent* GazeActionComponent;
 
@@ -75,4 +91,8 @@ protected:
 	bool bChangeColor;
 
 	bool bShowHover;
+
+	EGazeState State;
+	//after stay show action time down
+	bool bShowHoverable;
 };

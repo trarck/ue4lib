@@ -13,7 +13,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 UGazePointer::UGazePointer()
 	:bPenetrate(true),
 	PointerHoverRadius(1.5f),
-	ActionDuration(1.0f),
+	ActionDuration(0.5f),
+	StayDuration(0.5f),
 	GazeColor(FLinearColor::Blue),
 	Elapsed(0),
 	bIsHover(false),
@@ -24,7 +25,9 @@ UGazePointer::UGazePointer()
 	HoverMID(nullptr),
 	GazeActionComponent(nullptr),
 	bChangeColor(false),
-	bShowHover(false)
+	bShowHover(false),
+	bShowHoverable(false),
+	State(EGazeState::None)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -58,7 +61,6 @@ void UGazePointer::CreatePointerMesh()
 			PointerMeshComponent->SetMaterial(0, PointerMID);
 		}
 	}
-
 }
 
 void UGazePointer::CreateHoverMesh()
@@ -149,7 +151,17 @@ void UGazePointer::BeginPlay()
 void UGazePointer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bIsHover)
+
+	if (State == EGazeState::Stay)
+	{
+		Elapsed += DeltaTime;
+		if (Elapsed >= StayDuration)
+		{
+			State = EGazeState::Hover;
+			Elapsed -= StayDuration;
+		}
+	}
+	else if (State == EGazeState::Hover)
 	{
 		Elapsed += DeltaTime;
 		float Percent = Elapsed / Duration;
@@ -157,7 +169,7 @@ void UGazePointer::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		if (Percent >= 1.0f)
 		{
 			Percent = 1.0f;
-			bIsHover = false;
+			State = EGazeState::Actioned;
 			//RunAction
 			if (GazeActionComponent && GazeActionComponent->IsValidLowLevel())
 			{
@@ -211,9 +223,12 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 				if (RayInteractiveComponent->IsHover())
 				{
 					//show hover
-					HoverMeshComponent->SetVisibility(true);
-					HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
-					HoverMeshComponent->SetWorldRotation(Rotator);
+					if (State >= EGazeState::Hover)
+					{
+						HoverMeshComponent->SetVisibility(true);
+						HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
+						HoverMeshComponent->SetWorldRotation(Rotator);
+					}
 
 					//is hover start
 					if (bBeginHit || RayInteractiveComponent->IsHoverChanged())
@@ -246,7 +261,7 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 						}
 
 						//start or restart hover
-						StartHover();
+						StartStay();
 					}
 				}
 				else
@@ -285,11 +300,12 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 	}
 }
 
-void UGazePointer::StartHover()
+void UGazePointer::StartStay()
 {
-	//UE_LOG(LogRayCaster, Log, TEXT("StartHover"));
+	//UE_LOG(LogRayCaster, Log, TEXT("StartStay"));
 	bIsHover = true;
-	bShowHover = true;
+	State =EGazeState::Stay;
+	//bShowHover = true;
 	Elapsed = 0;
 	SetHoverPercent(0);
 }
@@ -307,6 +323,8 @@ void UGazePointer::EndHover()
 			bChangeColor = false;
 		}
 	}
+
+	State = EGazeState::None;
 }
 
 void UGazePointer::SetLaserVisuals(const FLinearColor& NewColor)
