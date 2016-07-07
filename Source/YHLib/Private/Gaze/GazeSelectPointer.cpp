@@ -148,7 +148,7 @@ void UGazeSelectPointer::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    if (State == EGazeSelectState::Hover)
+	if (State == EGazeSelectState::Hover)
 	{
 		Elapsed += DeltaTime;
 		float Percent = Elapsed / Duration;
@@ -175,13 +175,11 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 {
 	if (bHaveRay)
 	{
-		//set pointer visible
-		PointerMeshComponent->SetVisibility(true);
+		bool bShowPointer = true;
 
 		//face to Start point
 		FRotator Rotator = FRotationMatrix::MakeFromX(Start - End).Rotator();
 		Rotator.Pitch -= 90;
-		PointerMeshComponent->SetWorldRotation(Rotator);
 
 		//UE_LOG(LogRayCaster, Log, TEXT("bHit:%d"), bHit);
 		FVector PointPosition = End;
@@ -206,7 +204,7 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 				if (RayInteractiveComponent->IsHover())
 				{
 					//is hover start
-					if (bBeginHit || (RayInteractiveComponent->IsHoverChanged() && State==EGazeSelectState::None	))
+					if (bBeginHit || (RayInteractiveComponent->IsHoverChanged() && State == EGazeSelectState::None))
 					{
 						//set gaze color
 						if (RayInteractiveComponent->HaveHoverColor())
@@ -229,6 +227,7 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 						HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
 						HoverMeshComponent->SetWorldRotation(Rotator);
 					}
+					bShowPointer = false;
 				}
 				else
 				{
@@ -255,8 +254,20 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 			EndHover();
 		}
 
-		//update pointer end position
-		PointerMeshComponent->SetWorldLocation(PointPosition);
+		if (bShowPointer)
+		{
+			//set pointer visible
+			PointerMeshComponent->SetVisibility(true);
+
+			PointerMeshComponent->SetWorldRotation(Rotator);
+
+			//update pointer end position
+			PointerMeshComponent->SetWorldLocation(PointPosition);
+		}
+		else
+		{
+			PointerMeshComponent->SetVisibility(false);
+		}
 	}
 	else
 	{
@@ -269,15 +280,14 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 void UGazeSelectPointer::StartStay()
 {
 	//UE_LOG(LogRayCaster, Log, TEXT("StartStay"));
-	State =EGazeSelectState::Hover;
+	State = EGazeSelectState::Hover;
 	Elapsed = 0;
-	HoverMeshComponent->SetRelativeScale3D(FVector(1.0f, 1.0f,1.0f));
-	PointerMeshComponent->SetVisibility(false);
+	HoverMeshComponent->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 }
 
 void UGazeSelectPointer::EndHover()
 {
-	if (State >=EGazeSelectState::Hover)
+	if (State >= EGazeSelectState::Hover)
 	{
 		HoverMeshComponent->SetVisibility(false);
 	}
@@ -289,7 +299,6 @@ void UGazeSelectPointer::EndHover()
 	}
 
 	State = EGazeSelectState::None;
-	PointerMeshComponent->SetVisibility(true);
 }
 
 void UGazeSelectPointer::SetLaserVisuals(const FLinearColor& NewColor)
