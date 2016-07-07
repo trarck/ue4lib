@@ -6,10 +6,11 @@
 
 // Sets default values for this component's properties
 URayInteractiveComponent::URayInteractiveComponent()
+	:bHaveHoverColor(false),
+	HoverColor(FLinearColor::Blue)
 {
 
 }
-
 
 void URayInteractiveComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {

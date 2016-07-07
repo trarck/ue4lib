@@ -219,14 +219,6 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 
 				if (RayInteractiveComponent->IsHover())
 				{
-					//show hover
-					if (State >= EGazeState::Hover)
-					{
-						HoverMeshComponent->SetVisibility(true);
-						HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
-						HoverMeshComponent->SetWorldRotation(Rotator);
-					}
-
 					//is hover start
 					if (bBeginHit || RayInteractiveComponent->IsHoverChanged())
 					{
@@ -245,20 +237,29 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 								Duration = ActionDuration;
 							}
 
-							//set gaze color
-							if (GazeActionComponent->HaveGazeColor())
-							{
-								bChangeColor = true;
-								SetLaserVisuals(GazeActionComponent->GetGazeColor());
-							}
-							else
-							{
-								SetLaserVisuals(GazeColor);
-							}
+						}
+
+						//set gaze color
+						if (RayInteractiveComponent->HaveHoverColor())
+						{
+							bChangeColor = true;
+							SetLaserVisuals(RayInteractiveComponent->GetHoverColor());
+						}
+						else
+						{
+							SetLaserVisuals(GazeColor);
 						}
 
 						//start or restart hover
 						StartStay();
+					}
+
+					//show hover
+					if (State >= EGazeState::Hover)
+					{
+						HoverMeshComponent->SetVisibility(true);
+						HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
+						HoverMeshComponent->SetWorldRotation(Rotator);
 					}
 				}
 				else

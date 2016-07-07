@@ -6,18 +6,6 @@
 
 // Sets default values for this component's properties
 UWidgetGazeActionComponent::UWidgetGazeActionComponent()
-	:bWidgetHover(false),
-	bWidgetHoverable(false)
 {
 
-}
-
-bool UWidgetGazeActionComponent::RestartHover()
-{
-	return bWidgetHover;
-}
-
-bool UWidgetGazeActionComponent::Hoverable()
-{
-	return bWidgetHoverable;
 }

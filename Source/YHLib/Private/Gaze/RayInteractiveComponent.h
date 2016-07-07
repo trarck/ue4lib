@@ -6,12 +6,12 @@
 #include "RayInteractiveComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Gaze), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Gaze), meta = (BlueprintSpawnableComponent))
 class URayInteractiveComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	URayInteractiveComponent();
 
@@ -19,7 +19,7 @@ public:
 
 	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
 
-	virtual void OnRayExit(UActorComponent* HitComponent);	
+	virtual void OnRayExit(UActorComponent* HitComponent);
 
 	//if actor have special logic check hover like umg.
 	virtual bool IsHover();
@@ -28,4 +28,22 @@ public:
 	virtual bool IsHoverChanged();
 
 	virtual bool IsProtrudeThrough();
+
+	FORCEINLINE bool HaveHoverColor() const
+	{
+		return bHaveHoverColor;
+	}
+
+	FORCEINLINE const FLinearColor& GetHoverColor()
+	{
+		return HoverColor;
+	}
+
+protected:
+	/** response the ray input  should change laser color */
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
+	bool bHaveHoverColor;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
+	FLinearColor HoverColor;
 };

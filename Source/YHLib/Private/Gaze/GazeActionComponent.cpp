@@ -6,18 +6,7 @@
 
 // Sets default values for this component's properties
 UGazeActionComponent::UGazeActionComponent()
-:ActionDuration(0.0f),
-bHaveGazeColor(false)
+	:ActionDuration(0.5f)
 {
 
-}
-
-bool UGazeActionComponent::RestartHover()
-{
-	return false;
-}
-
-bool UGazeActionComponent::Hoverable()
-{
-	return true;
 }
