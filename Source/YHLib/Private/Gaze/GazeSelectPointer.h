@@ -56,10 +56,7 @@ protected:
 	float PointerHoverRadius;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
-	float ActionDuration;
-
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
-	float StayDuration;
+	float Duration;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
 	FLinearColor GazeColor;
@@ -80,9 +77,7 @@ protected:
 	class UGazeActionComponent* GazeActionComponent;
 
 	float Elapsed;
-
-	float Duration;
-
+	
 	bool bChangeColor;
 
 	EGazeSelectState State;

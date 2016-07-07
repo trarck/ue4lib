@@ -13,11 +13,9 @@ DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 UGazeSelectPointer::UGazeSelectPointer()
 	:bPenetrate(true),
 	PointerHoverRadius(1.5f),
-	ActionDuration(0.5f),
-	StayDuration(0.5f),
+	Duration(0.5f),
 	GazeColor(FLinearColor::Blue),
 	Elapsed(0),
-	Duration(1),
 	PointerMeshComponent(nullptr),
 	HoverMeshComponent(nullptr),
 	PointerMID(nullptr),
@@ -274,6 +272,7 @@ void UGazeSelectPointer::StartStay()
 	State =EGazeSelectState::Hover;
 	Elapsed = 0;
 	HoverMeshComponent->SetRelativeScale3D(FVector(1.0f, 1.0f,1.0f));
+	PointerMeshComponent->SetVisibility(false);
 }
 
 void UGazeSelectPointer::EndHover()
@@ -290,6 +289,7 @@ void UGazeSelectPointer::EndHover()
 	}
 
 	State = EGazeSelectState::None;
+	PointerMeshComponent->SetVisibility(true);
 }
 
 void UGazeSelectPointer::SetLaserVisuals(const FLinearColor& NewColor)
