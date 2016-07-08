@@ -11,6 +11,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRayInput, Log, All);
 URayInput::URayInput()
 	:Caster(nullptr),
 	LastHitComponent(nullptr),
+	CurrentInteractiveComponent(nullptr),
 	RayLength(1000),
 	bIgnoreSelf(true)
 {
@@ -69,24 +70,25 @@ void URayInput::Process()
 					URayInteractiveComponent* LastRayInteractiveComponent = LastHitComponent->GetOwner()->FindComponentByClass<URayInteractiveComponent>();
 					if (LastRayInteractiveComponent != nullptr)
 					{
-						LastRayInteractiveComponent->OnRayExit(LastHitComponent);
+						LastRayInteractiveComponent->RayExit(LastHitComponent);
 					}
 				}
 
 				//current enter
 				URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
+				CurrentInteractiveComponent = RayInteractiveComponent;
+
 				if (RayInteractiveComponent != nullptr)
 				{
 					//UE_LOG(LogRayInput, Log, TEXT("RayInput[%s] Have"), *(HitResult.GetComponent()->GetName()));
-					RayInteractiveComponent->OnRayEnter(HitResult.ImpactPoint, CurrentComponent, HitResult);
+					RayInteractiveComponent->RayEnter(HitResult.ImpactPoint, CurrentComponent, HitResult);
 				}
 				else
 				{
 					//UE_LOG(LogRayInput, Log, TEXT("RayInput[%s] No"), *(HitResult.GetComponent()->GetName()));
 				}
-
 				LastHitComponent = CurrentComponent;
-
+				
 				bBeginHit = true;
 			}
 			else
@@ -95,7 +97,7 @@ void URayInput::Process()
 				URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
 				if (RayInteractiveComponent != nullptr)
 				{
-					RayInteractiveComponent->OnRayStay(HitResult.ImpactPoint, CurrentComponent, HitResult);
+					RayInteractiveComponent->RayStay(HitResult.ImpactPoint, CurrentComponent, HitResult);
 				}
 			}
 			//LastHitPoint = HitResult.ImpactPoint;
@@ -107,7 +109,7 @@ void URayInput::Process()
 			URayInteractiveComponent* LastRayInteractiveComponent = LastHitComponent->GetOwner()->FindComponentByClass<URayInteractiveComponent>();
 			if (LastRayInteractiveComponent != nullptr)
 			{
-				LastRayInteractiveComponent->OnRayExit(LastHitComponent);
+				LastRayInteractiveComponent->RayExit(LastHitComponent);
 			}
 
 			LastHitComponent = nullptr;
@@ -165,6 +167,27 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 	}
 
 	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);
+}
+
+bool  URayInput::HandleKeyDownEvent(FKey Key)
+{
+	FModifierKeysState ModifierKeys(false, false,false, false,false, false, false, false, false);
+	FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, false, 0, 0);
+
+	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
+	{
+		CurrentInteractiveComponent->KeyDown(Key);
+	}
+	return true;
+}
+
+bool  URayInput::HandleKeyUpEvent(FKey Key)
+{
+	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
+	{
+		CurrentInteractiveComponent->KeyUp(Key);
+	}
+	return true;
 }
 
 void URayInput::SetCaster(USceneComponent* CasterComponent)

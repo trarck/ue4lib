@@ -65,18 +65,29 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	void ClearIgnores();
 
+	//handle Input event
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual bool HandleKeyDownEvent(FKey Key);
+
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual bool HandleKeyUpEvent(FKey Key);
+
 protected:
 
-	//caste ray component contain transform. mustbe camera,vr handle or others.
+	//Actors don't check
+	UPROPERTY(BlueprintReadWrite, Category = "Laser")
+	TArray<AActor*> DefaultIgnores;
+
+	//caste ray component contain transform. maybe camera,vr handle or others.
 	//UPROPERTY()
 	USceneComponent* Caster;
 
 	UPROPERTY()
 	UActorComponent* LastHitComponent;
 
+	UPROPERTY()
+	class URayInteractiveComponent* CurrentInteractiveComponent;
+
 	//FVector LastHitPoint;
 
-	//Actors don't check
-	UPROPERTY(BlueprintReadWrite, Category = "Laser")
-	TArray<AActor*> DefaultIgnores;
 };

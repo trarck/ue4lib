@@ -2,22 +2,17 @@
 
 #pragma once
 
-#include "Engine.h"
-#include "GazeActionComponent.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionSignature);
+#include "RayInteractiveComponent.h"
+#include "GazeInteractiveComponent.generated.h"
 
 UCLASS( ClassGroup=(Gaze), meta=(BlueprintSpawnableComponent) )
-class UGazeActionComponent : public UActorComponent
+class UGazeInteractiveComponent : public URayInteractiveComponent
 {
 	GENERATED_BODY()
 public:	
 		
 	// Sets default values for this component's properties
-	UGazeActionComponent();
-
-	UPROPERTY(BlueprintAssignable, Category = "Gaze")
-	FActionSignature OnAction;
+	UGazeInteractiveComponent();
 
 	float GetActionDuration() const
 	{
@@ -25,7 +20,6 @@ public:
 	}
 
 protected:
-
 	/** zero use global config*/
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
 	float ActionDuration;

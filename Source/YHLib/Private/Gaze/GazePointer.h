@@ -37,7 +37,10 @@ public:
 
 	UFUNCTION()
 	void ProcessRayHit( bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit,bool bHaveRay);
-
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Gaze")
+	void DoAction();
+	void DoAction_Implementation();
 protected:
 	void CreatePointerMesh();
 	void CreateHoverMesh();
@@ -80,7 +83,7 @@ protected:
 	UMaterialInstanceDynamic* HoverMID;
 
 	UPROPERTY()
-	class UGazeActionComponent* GazeActionComponent;
+	class UGazeInteractiveComponent* GazeInteractiveComponent;
 
 	float Elapsed;
 

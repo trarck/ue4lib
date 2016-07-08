@@ -6,6 +6,12 @@
 #include "RayInteractiveComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRayEnterSignature, const FVector&, HitLocation, UActorComponent* ,HitComponent, const FHitResult&,Hit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRayStaySignature, const FVector&, HitLocation, UActorComponent*, HitComponent, const FHitResult&, Hit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRayExitSignature,UActorComponent*, HitComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRayKeyDownSignature, FKey, Key);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRayKeyUpSignature, FKey, Key);
+
 UCLASS(ClassGroup = (Gaze), meta = (BlueprintSpawnableComponent))
 class URayInteractiveComponent : public UActorComponent
 {
@@ -15,11 +21,15 @@ public:
 	// Sets default values for this component's properties
 	URayInteractiveComponent();
 
-	virtual void OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
+	virtual void RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
 
-	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
+	virtual void RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit);
 
-	virtual void OnRayExit(UActorComponent* HitComponent);
+	virtual void RayExit(UActorComponent* HitComponent);
+
+	virtual void KeyDown(FKey Key);
+
+	virtual void KeyUp(FKey Key);	
 
 	//if actor have special logic check hover like umg.
 	virtual bool IsHover();
@@ -39,11 +49,37 @@ public:
 		return HoverColor;
 	}
 
+	FORCEINLINE bool IsSelfHoverShow() const
+	{
+		return bSelfHoverShow;
+	}
+
+public://event
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FRayEnterSignature OnRayEnter;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FRayStaySignature OnRayStay;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FRayExitSignature OnRayExit;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FRayKeyDownSignature OnKeyDown;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FRayKeyUpSignature OnKeyUp;
+
 protected:
+
 	/** response the ray input  should change laser color */
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
 	bool bHaveHoverColor;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
 	FLinearColor HoverColor;
+
+	//show hover animation by hover,no default hover animation
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
+	bool bSelfHoverShow;
 };

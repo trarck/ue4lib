@@ -5,7 +5,7 @@
 
 #include "RayInput.h"
 #include "RayInteractiveComponent.h"
-#include "GazeActionComponent.h"
+#include "GazeInteractiveComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 
@@ -22,7 +22,7 @@ UGazePointer::UGazePointer()
 	HoverMeshComponent(nullptr),
 	PointerMID(nullptr),
 	HoverMID(nullptr),
-	GazeActionComponent(nullptr),
+	GazeInteractiveComponent(nullptr),
 	bChangeColor(false),
 	State(EGazeState::None)
 {
@@ -166,12 +166,9 @@ void UGazePointer::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		if (Percent >= 1.0f)
 		{
 			Percent = 1.0f;
-			State = EGazeState::Actioned;
+			State = EGazeState::Actioned;			
 			//RunAction
-			if (GazeActionComponent && GazeActionComponent->IsValidLowLevel())
-			{
-				GazeActionComponent->OnAction.Broadcast();
-			}
+			DoAction();
 		}
 		SetHoverPercent(Percent);
 	}
@@ -203,31 +200,30 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 		if (bHit)
 		{
 			bool bProtrudeThrough = bPenetrate;
-
-			URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
+			GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
 
 			//check should response gaze
-			if (RayInteractiveComponent)
+			if (GazeInteractiveComponent)
 			{
-				bProtrudeThrough = RayInteractiveComponent->IsProtrudeThrough();
+				bProtrudeThrough = GazeInteractiveComponent->IsProtrudeThrough();
 
-				if (bBeginHit)
-				{
-					//set current action component
-					this->GazeActionComponent = HitResult.GetActor()->FindComponentByClass<UGazeActionComponent>();
-				}
+				//if (bBeginHit)
+				//{
+				//	//set current action component
+				//	this->GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
+				//}
 
-				if (RayInteractiveComponent->IsHover())
+				if (GazeInteractiveComponent->IsHover() && !GazeInteractiveComponent->IsSelfHoverShow())
 				{
 					//is hover start
-					if (bBeginHit || RayInteractiveComponent->IsHoverChanged())
+					if (bBeginHit || GazeInteractiveComponent->IsHoverChanged())
 					{
 						//set gaze style
-						if (GazeActionComponent)
+						if (GazeInteractiveComponent)
 						{
 							//use target gaze style
 							//set Action duration
-							float ComponentActionDuration = GazeActionComponent->GetActionDuration();
+							float ComponentActionDuration = GazeInteractiveComponent->GetActionDuration();
 							if (ComponentActionDuration != 0)
 							{
 								Duration = ComponentActionDuration;
@@ -236,14 +232,13 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 							{
 								Duration = ActionDuration;
 							}
-
 						}
 
 						//set gaze color
-						if (RayInteractiveComponent->HaveHoverColor())
+						if (GazeInteractiveComponent->HaveHoverColor())
 						{
 							bChangeColor = true;
-							SetLaserVisuals(RayInteractiveComponent->GetHoverColor());
+							SetLaserVisuals(GazeInteractiveComponent->GetHoverColor());
 						}
 						else
 						{
@@ -333,4 +328,13 @@ void UGazePointer::SetHoverPercent(float Percent)
 {
 	static FName StaticLaserPercentParameterName("Percent");
 	HoverMID->SetScalarParameterValue(StaticLaserPercentParameterName, Percent);
+}
+
+void UGazePointer::DoAction_Implementation()
+{
+	if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
+	{
+		GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
+		GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
+	}
 }

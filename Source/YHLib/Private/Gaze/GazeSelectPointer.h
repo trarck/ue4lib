@@ -73,9 +73,6 @@ protected:
 	UPROPERTY()
 	UMaterialInstanceDynamic* HoverMID;
 
-	UPROPERTY()
-	class UGazeActionComponent* GazeActionComponent;
-
 	float Elapsed;
 	
 	bool bChangeColor;

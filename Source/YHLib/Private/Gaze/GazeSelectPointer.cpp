@@ -5,7 +5,6 @@
 
 #include "RayInput.h"
 #include "RayInteractiveComponent.h"
-#include "GazeActionComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 
@@ -20,7 +19,6 @@ UGazeSelectPointer::UGazeSelectPointer()
 	HoverMeshComponent(nullptr),
 	PointerMID(nullptr),
 	HoverMID(nullptr),
-	GazeActionComponent(nullptr),
 	bChangeColor(false),
 	State(EGazeSelectState::None)
 {
@@ -194,12 +192,6 @@ void UGazeSelectPointer::ProcessRayHit(bool bHit, const FVector&  Start, const F
 			if (RayInteractiveComponent)
 			{
 				bProtrudeThrough = RayInteractiveComponent->IsProtrudeThrough();
-
-				//if (bBeginHit)
-				//{
-				//	//set current action component
-				//	this->GazeActionComponent = HitResult.GetActor()->FindComponentByClass<UGazeActionComponent>();
-				//}
 
 				if (RayInteractiveComponent->IsHover())
 				{

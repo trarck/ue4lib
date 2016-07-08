@@ -7,24 +7,35 @@
 // Sets default values for this component's properties
 URayInteractiveComponent::URayInteractiveComponent()
 	:bHaveHoverColor(false),
-	HoverColor(FLinearColor::Blue)
+	HoverColor(FLinearColor::Blue),
+	bSelfHoverShow(false)
 {
 
 }
 
-void URayInteractiveComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void URayInteractiveComponent::RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
-
+	OnRayEnter.Broadcast(HitLocation, HitComponent, Hit);
 }
 
-void URayInteractiveComponent::OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void URayInteractiveComponent::RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
-
+	OnRayStay.Broadcast(HitLocation, HitComponent, Hit);
 }
 
-void URayInteractiveComponent::OnRayExit(UActorComponent* HitComponent)
+void URayInteractiveComponent::RayExit(UActorComponent* HitComponent)
 {
+	OnRayExit.Broadcast(HitComponent);
+}
 
+void URayInteractiveComponent::KeyDown(FKey Key)
+{
+	OnKeyDown.Broadcast(Key);
+}
+
+void URayInteractiveComponent::KeyUp(FKey Key)
+{
+	OnKeyUp.Broadcast(Key);
 }
 
 bool URayInteractiveComponent::IsHover()

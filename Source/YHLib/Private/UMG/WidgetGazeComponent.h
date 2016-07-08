@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "Gaze/RayInteractiveComponent.h"
+
+#include "Gaze/GazeInteractiveComponent.h"
 #include "WidgetGazeComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UWidgetGazeComponent : public URayInteractiveComponent
+class UWidgetGazeComponent : public UGazeInteractiveComponent
 {
 	GENERATED_BODY()
 
@@ -15,20 +16,29 @@ public:
 	// Sets default values for this component's properties
 	UWidgetGazeComponent();
 	
-	virtual void OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
+	virtual void RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
 
-	virtual void OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
+	virtual void RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit) override;
 
-	virtual void OnRayExit(UActorComponent* HitComponent) override;
+	virtual void RayExit(UActorComponent* HitComponent) override;
+
+	virtual void KeyDown(FKey Key) override;
+
+	virtual void KeyUp(FKey Key) override;
 
 	virtual bool IsHover() override;
 
 	virtual bool IsHoverChanged() override;
+
 	//default is button
 	virtual bool IsWidgetInteractive(TSharedRef<SWidget> Widget);
 
+	FORCEINLINE const FWidgetAndPointer& GetActiveWidgetAndPointer()
+	{
+		return ActiveWidgetAndPointer;
+	}
 protected:
 	bool bWidgetHover;
 	bool bWidgetChange;
-	FWidgetAndPointer CachedWidgetAndPointer;
+	FWidgetAndPointer ActiveWidgetAndPointer;
 };

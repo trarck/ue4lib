@@ -4,7 +4,6 @@
 #include "WidgetGazeComponent.h"
 
 #include "WidgetComponent.h"
-#include "WidgetGazeActionComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWidgetGaze, Log, All);
 
@@ -22,7 +21,7 @@ UWidgetGazeComponent::UWidgetGazeComponent()
 }
 
 
-void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void UWidgetGazeComponent::RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayEndter"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
@@ -51,12 +50,12 @@ void UWidgetGazeComponent::OnRayEnter(const FVector& HitLocation, UActorComponen
 
 	if (widgets.Num() > 0)
 	{
-		CachedWidgetAndPointer = widgets.Last();
-		bWidgetHover = IsWidgetInteractive(CachedWidgetAndPointer.Widget);
+		ActiveWidgetAndPointer = widgets.Last();
+		bWidgetHover = IsWidgetInteractive(ActiveWidgetAndPointer.Widget);
 	}
 }
 
-void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void UWidgetGazeComponent::RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayStay"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
@@ -81,9 +80,9 @@ void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent
 		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
 		if (widgets.Num() > 0)
 		{
-			if (!(CachedWidgetAndPointer == widgets.Last()))
+			if (!(ActiveWidgetAndPointer == widgets.Last()))
 			{
-				CachedWidgetAndPointer = widgets.Last();	
+				ActiveWidgetAndPointer = widgets.Last();	
 				bWidgetChange = true;
 			}
 			else
@@ -91,12 +90,12 @@ void UWidgetGazeComponent::OnRayStay(const FVector& HitLocation, UActorComponent
 				bWidgetChange = false;
 			}
 
-			bWidgetHover = IsWidgetInteractive(CachedWidgetAndPointer.Widget);
+			bWidgetHover = IsWidgetInteractive(ActiveWidgetAndPointer.Widget);
 		}
 	}
 }
 
-void UWidgetGazeComponent::OnRayExit(UActorComponent* HitComponent)
+void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent)
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
@@ -114,6 +113,17 @@ void UWidgetGazeComponent::OnRayExit(UActorComponent* HitComponent)
 		FModifierKeysState());
 
 	FSlateApplication::Get().RoutePointerMoveEvent(FWidgetPath(), PointerEvent, false);
+}
+
+void UWidgetGazeComponent::KeyDown(FKey Key)
+{
+	Super::KeyDown(Key);
+	if(ActiveWidgetAndPointer)
+}
+
+void UWidgetGazeComponent::KeyUp(FKey Key)
+{
+	Super::KeyUp(Key);
 }
 
 bool UWidgetGazeComponent::IsHover()
