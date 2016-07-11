@@ -22,6 +22,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Input)
 		static void PopInputComponent(APlayerController* PlayerController, UInputComponent* InputComponent);
+
+
+	UFUNCTION(BlueprintCallable, Category = Input)
+	static const FKey GetInputKey(FName Name);
 	
 	
 };

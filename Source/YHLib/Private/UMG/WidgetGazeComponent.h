@@ -26,6 +26,10 @@ public:
 
 	virtual void KeyUp(FKey Key) override;
 
+	virtual void KeyDownEvent(FKeyEvent KeyEvent) override;
+
+	virtual void KeyUpEvent(FKeyEvent KeyEvent) override;
+
 	virtual bool IsHover() override;
 
 	virtual bool IsHoverChanged() override;

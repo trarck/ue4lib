@@ -42,5 +42,19 @@ void UYHInputUtil::PopInputComponent(APlayerController* PlayerController, UInput
 	}
 }
 
+const FKey UYHInputUtil::GetInputKey(FName Name)
+{
+	TArray<FKey> AllKeys;
+	EKeys::GetAllKeys(AllKeys);
+	for (int i = 0; i < AllKeys.Num(); ++i)
+	{
+		if (AllKeys[i].GetFName().IsEqual(Name))
+		{
+			return AllKeys[i];
+		}
+	}
+	return EKeys::Invalid;
+}
+
 
 

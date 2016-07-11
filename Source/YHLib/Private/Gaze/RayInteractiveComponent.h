@@ -31,6 +31,10 @@ public:
 
 	virtual void KeyUp(FKey Key);	
 
+	virtual void KeyDownEvent(FKeyEvent KeyEvent);
+
+	virtual void KeyUpEvent(FKeyEvent KeyEvent);
+
 	//if actor have special logic check hover like umg.
 	virtual bool IsHover();
 

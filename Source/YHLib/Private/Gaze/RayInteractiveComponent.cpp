@@ -38,6 +38,16 @@ void URayInteractiveComponent::KeyUp(FKey Key)
 	OnKeyUp.Broadcast(Key);
 }
 
+void URayInteractiveComponent::KeyDownEvent(FKeyEvent KeyEvent)
+{
+	OnKeyDown.Broadcast(KeyEvent.GetKey());
+}
+
+void URayInteractiveComponent::KeyUpEvent(FKeyEvent KeyEvent)
+{
+	OnKeyUp.Broadcast(KeyEvent.GetKey());
+}
+
 bool URayInteractiveComponent::IsHover()
 {
 	return true;

@@ -25,7 +25,7 @@ void UWidgetGazeComponent::RayEnter(const FVector& HitLocation, UActorComponent*
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayEndter"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
-	
+
 	TArray<FWidgetAndPointer> widgets = WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false);
 
 	FWidgetPath WidgetPathUnderFinger = FWidgetPath(widgets);
@@ -82,7 +82,7 @@ void UWidgetGazeComponent::RayStay(const FVector& HitLocation, UActorComponent* 
 		{
 			if (!(ActiveWidgetAndPointer == widgets.Last()))
 			{
-				ActiveWidgetAndPointer = widgets.Last();	
+				ActiveWidgetAndPointer = widgets.Last();
 				bWidgetChange = true;
 			}
 			else
@@ -99,7 +99,7 @@ void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent)
 {
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
-	
+
 	FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
 
 	TSet<FKey> PressedButtons;
@@ -118,12 +118,41 @@ void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent)
 void UWidgetGazeComponent::KeyDown(FKey Key)
 {
 	Super::KeyDown(Key);
-	if(ActiveWidgetAndPointer)
+	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+	{
+		FModifierKeysState ModifierKeys(false, false, false, false, false, false, false, false, false);
+		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, false, 0, 0);
+		ActiveWidgetAndPointer.Widget->OnKeyDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	}
 }
 
 void UWidgetGazeComponent::KeyUp(FKey Key)
 {
 	Super::KeyUp(Key);
+	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+	{
+		FModifierKeysState ModifierKeys(false, false, false, false, false, false, false, false, false);
+		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, false, 0, 0);
+		ActiveWidgetAndPointer.Widget->OnKeyUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	}
+}
+
+void UWidgetGazeComponent::KeyDownEvent(FKeyEvent KeyEvent)
+{
+	Super::KeyDownEvent(KeyEvent);
+	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+	{
+		ActiveWidgetAndPointer.Widget->OnKeyDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	}
+}
+
+void UWidgetGazeComponent::KeyUpEvent(FKeyEvent KeyEvent)
+{
+	Super::KeyUpEvent(KeyEvent);
+	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+	{
+		ActiveWidgetAndPointer.Widget->OnKeyUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	}
 }
 
 bool UWidgetGazeComponent::IsHover()

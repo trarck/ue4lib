@@ -65,12 +65,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	void ClearIgnores();
 
-	//handle Input event
+	//handle Input key event
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyDownEvent(FKey Key);
+	virtual bool HandleKeyDown(FKey Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyUpEvent(FKey Key);
+	virtual bool HandleKeyUp(FKey Key);
+
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual bool HandleKeyDownEvent(FKeyEvent KeyEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual bool HandleKeyUpEvent(FKeyEvent KeyEvent);
 
 protected:
 
