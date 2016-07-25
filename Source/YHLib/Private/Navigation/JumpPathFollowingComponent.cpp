@@ -12,7 +12,8 @@ UJumpPathFollowingComponent::UJumpPathFollowingComponent(const FObjectInitialize
 	:Super(ObjectInitializer),
 	SpecailMovementMode(MOVE_Flying),
 	NormalMovementMode(MOVE_Walking),
-	CharacterMoveComp(nullptr)
+	CharacterMoveComp(nullptr),
+	bInJumpNavArea(false)
 {
 
 }
@@ -28,13 +29,20 @@ void UJumpPathFollowingComponent::SetMoveSegment(int32 SegmentStartIndex)
 		const FNavPathPoint& SegmentStart = Path->GetPathPoints()[MoveSegmentStartIndex];
 		if (NavUtils::HasJumpFlag(SegmentStart))//FNavMeshNodeFlags(SegmentStart.Flags).AreaFlags & (1 << (uint8)ENavAreaFlag::Jump)
 		{
+			bInJumpNavArea = true;
 			UE_LOG(JumpPathFollowingComponent, Log, TEXT("[%f]SetMoveSegment:Fly"),t, SegmentStartIndex);
 			CharacterMoveComp->SetMovementMode(SpecailMovementMode);
+			OnEnterJumpArea.Broadcast(CharacterMoveComp);
 		}
 		else
 		{
-			UE_LOG(JumpPathFollowingComponent, Log, TEXT("[%f]SetMoveSegment:Walk"), t,SegmentStartIndex);
-			CharacterMoveComp->SetMovementMode(NormalMovementMode);
+			UE_LOG(JumpPathFollowingComponent, Log, TEXT("[%f]SetMoveSegment:Walk"), t, SegmentStartIndex);
+			if (bInJumpNavArea)
+			{
+				bInJumpNavArea = false;				
+				CharacterMoveComp->SetMovementMode(NormalMovementMode);
+				OnLeaveJumpArea.Broadcast(CharacterMoveComp);
+			}
 		}
 	}
 }
