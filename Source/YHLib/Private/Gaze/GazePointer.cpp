@@ -334,7 +334,9 @@ void UGazePointer::DoAction_Implementation()
 {
 	if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
 	{
-		GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
-		GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
+		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
+		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
+		GazeInteractiveComponent->KeyDown(EKeys::Enter);
+		GazeInteractiveComponent->KeyUp(EKeys::Enter);
 	}
 }
