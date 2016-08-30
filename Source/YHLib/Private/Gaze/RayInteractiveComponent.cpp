@@ -8,7 +8,7 @@
 URayInteractiveComponent::URayInteractiveComponent()
 	:bHaveHoverColor(false),
 	HoverColor(FLinearColor::Blue),
-	bSelfHoverShow(false)
+	bShowDefaultHover(true)
 {
 
 }

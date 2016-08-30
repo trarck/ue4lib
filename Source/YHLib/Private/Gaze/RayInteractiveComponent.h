@@ -53,9 +53,9 @@ public:
 		return HoverColor;
 	}
 
-	FORCEINLINE bool IsSelfHoverShow() const
+	FORCEINLINE bool IsShowDefaultHover() const
 	{
-		return bSelfHoverShow;
+		return bShowDefaultHover;
 	}
 
 public://event
@@ -85,5 +85,5 @@ protected:
 
 	//show hover animation by hover,no default hover animation
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
-	bool bSelfHoverShow;
+	bool bShowDefaultHover;
 };

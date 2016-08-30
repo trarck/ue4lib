@@ -213,7 +213,7 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 				//	this->GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
 				//}
 
-				if (GazeInteractiveComponent->IsHover() && !GazeInteractiveComponent->IsSelfHoverShow())
+				if (GazeInteractiveComponent->IsHover() && GazeInteractiveComponent->IsShowDefaultHover())
 				{
 					//is hover start
 					if (bBeginHit || GazeInteractiveComponent->IsHoverChanged())
