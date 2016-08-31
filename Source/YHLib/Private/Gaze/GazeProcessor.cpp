@@ -1,30 +1,26 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "YHLibPrivatePCH.h"
-#include "GazePointer.h"
+#include "GazeProcessor.h"
 
 #include "RayInput.h"
 #include "RayInteractiveComponent.h"
-#include "GazeInteractiveComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 
 // Sets default values for this component's properties
-UGazePointer::UGazePointer()
+UGazeProcessor::UGazeProcessor()
 	:bPenetrate(true),
 	PointerHoverRadius(1.5f),
-	ActionDuration(0.5f),
-	StayDuration(0.5f),
+	Duration(0.5f),
 	GazeColor(FLinearColor::Blue),
 	Elapsed(0),
-	Duration(1),
 	PointerMeshComponent(nullptr),
 	HoverMeshComponent(nullptr),
 	PointerMID(nullptr),
 	HoverMID(nullptr),
-	GazeInteractiveComponent(nullptr),
 	bChangeColor(false),
-	State(EGazeState::None)
+	State(EGazeSelectState::None)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -32,7 +28,7 @@ UGazePointer::UGazePointer()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UGazePointer::CreatePointerMesh()
+void UGazeProcessor::CreatePointerMesh()
 {
 	// Laser pointer
 	PointerMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("LaserPointerMeshComponent"));
@@ -60,7 +56,7 @@ void UGazePointer::CreatePointerMesh()
 	}
 }
 
-void UGazePointer::CreateHoverMesh()
+void UGazeProcessor::CreateHoverMesh()
 {
 	UE_LOG(LogRayCaster, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
@@ -89,7 +85,7 @@ void UGazePointer::CreateHoverMesh()
 	}
 }
 
-void UGazePointer::LoadFromChildren()
+void UGazeProcessor::LoadFromChildren()
 {
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
 	for (int i = 0; i < Children.Num(); ++i)
@@ -128,7 +124,7 @@ void UGazePointer::LoadFromChildren()
 }
 
 // Called when the game starts
-void UGazePointer::BeginPlay()
+void UGazeProcessor::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -143,22 +139,14 @@ void UGazePointer::BeginPlay()
 	{
 		CreateHoverMesh();
 	}
+	SetHoverPercent(1.0f);
 }
 
-void UGazePointer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UGazeProcessor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (State == EGazeState::Stay)
-	{
-		Elapsed += DeltaTime;
-		if (Elapsed >= StayDuration)
-		{
-			State = EGazeState::Hover;
-			Elapsed -= StayDuration;
-		}
-	}
-	else if (State == EGazeState::Hover)
+	if (State == EGazeSelectState::Hover)
 	{
 		Elapsed += DeltaTime;
 		float Percent = Elapsed / Duration;
@@ -166,33 +154,30 @@ void UGazePointer::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		if (Percent >= 1.0f)
 		{
 			Percent = 1.0f;
-			State = EGazeState::Actioned;			
-			//RunAction
-			DoAction();
+			State = EGazeSelectState::Hovered;
 		}
-		SetHoverPercent(Percent);
+		float Scale = 1 + 0.5f*Percent;
+		HoverMeshComponent->SetRelativeScale3D(FVector(Scale, Scale, Scale));
 	}
 }
 
-void UGazePointer::RegisterProcess(URayInput* RayInput)
+void UGazeProcessor::RegisterProcess(URayInput* RayInput)
 {
 	if (RayInput)
 	{
-		RayInput->OnProcessRay.AddDynamic(this, &UGazePointer::ProcessRayHit);
+		RayInput->OnProcessRay.AddDynamic(this, &UGazeProcessor::ProcessRayHit);
 	}
 }
 
-void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit, bool bHaveRay)
+void UGazeProcessor::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit, bool bHaveRay)
 {
 	if (bHaveRay)
 	{
-		//set pointer visible
-		PointerMeshComponent->SetVisibility(true);
+		bool bShowPointer = true;
 
 		//face to Start point
 		FRotator Rotator = FRotationMatrix::MakeFromX(Start - End).Rotator();
 		Rotator.Pitch -= 90;
-		PointerMeshComponent->SetWorldRotation(Rotator);
 
 		//UE_LOG(LogRayCaster, Log, TEXT("bHit:%d"), bHit);
 		FVector PointPosition = End;
@@ -200,62 +185,41 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 		if (bHit)
 		{
 			bool bProtrudeThrough = bPenetrate;
-			GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
+
+			URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
 
 			//check should response gaze
-			if (GazeInteractiveComponent)
+			if (RayInteractiveComponent)
 			{
-				bProtrudeThrough = GazeInteractiveComponent->IsProtrudeThrough();
+				bProtrudeThrough = RayInteractiveComponent->IsProtrudeThrough();
 
-				//if (bBeginHit)
-				//{
-				//	//set current action component
-				//	this->GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
-				//}
-
-				if (GazeInteractiveComponent->IsHover() && GazeInteractiveComponent->IsShowDefaultHover())
+				if (RayInteractiveComponent->IsHover())
 				{
 					//is hover start
-					if (bBeginHit || GazeInteractiveComponent->IsHoverChanged())
+					if (bBeginHit || (RayInteractiveComponent->IsHoverChanged() && State == EGazeSelectState::None))
 					{
-						//set gaze style
-						if (GazeInteractiveComponent)
-						{
-							//use target gaze style
-							//set Action duration
-							float ComponentActionDuration = GazeInteractiveComponent->GetActionDuration();
-							if (ComponentActionDuration != 0)
-							{
-								Duration = ComponentActionDuration;
-							}
-							else
-							{
-								Duration = ActionDuration;
-							}
-						}
-
 						//set gaze color
-						if (GazeInteractiveComponent->HaveHoverColor())
+						if (RayInteractiveComponent->HaveHoverColor())
 						{
 							bChangeColor = true;
-							SetLaserVisuals(GazeInteractiveComponent->GetHoverColor());
+							SetLaserVisuals(RayInteractiveComponent->GetHoverColor());
 						}
 						else
 						{
 							SetLaserVisuals(GazeColor);
 						}
-
 						//start or restart hover
 						StartStay();
 					}
 
 					//show hover
-					if (State >= EGazeState::Hover)
+					if (State >= EGazeSelectState::Hover)
 					{
 						HoverMeshComponent->SetVisibility(true);
 						HoverMeshComponent->SetWorldLocation(HitResult.ImpactPoint);
 						HoverMeshComponent->SetWorldRotation(Rotator);
 					}
+					bShowPointer = false;
 				}
 				else
 				{
@@ -282,8 +246,20 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 			EndHover();
 		}
 
-		//update pointer end position
-		PointerMeshComponent->SetWorldLocation(PointPosition);
+		if (bShowPointer)
+		{
+			//set pointer visible
+			PointerMeshComponent->SetVisibility(true);
+
+			PointerMeshComponent->SetWorldRotation(Rotator);
+
+			//update pointer end position
+			PointerMeshComponent->SetWorldLocation(PointPosition);
+		}
+		else
+		{
+			PointerMeshComponent->SetVisibility(false);
+		}
 	}
 	else
 	{
@@ -293,17 +269,17 @@ void UGazePointer::ProcessRayHit(bool bHit, const FVector&  Start, const FVector
 	}
 }
 
-void UGazePointer::StartStay()
+void UGazeProcessor::StartStay()
 {
 	//UE_LOG(LogRayCaster, Log, TEXT("StartStay"));
-	State =EGazeState::Stay;
+	State = EGazeSelectState::Hover;
 	Elapsed = 0;
-	SetHoverPercent(0);
+	HoverMeshComponent->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 }
 
-void UGazePointer::EndHover()
+void UGazeProcessor::EndHover()
 {
-	if (State >=EGazeState::Hover)
+	if (State >= EGazeSelectState::Hover)
 	{
 		HoverMeshComponent->SetVisibility(false);
 	}
@@ -314,29 +290,18 @@ void UGazePointer::EndHover()
 		bChangeColor = false;
 	}
 
-	State = EGazeState::None;
+	State = EGazeSelectState::None;
 }
 
-void UGazePointer::SetLaserVisuals(const FLinearColor& NewColor)
+void UGazeProcessor::SetLaserVisuals(const FLinearColor& NewColor)
 {
 	static FName StaticLaserColorParameterName("Color");
 	PointerMID->SetVectorParameterValue(StaticLaserColorParameterName, NewColor);
 	HoverMID->SetVectorParameterValue(StaticLaserColorParameterName, NewColor);
 }
 
-void UGazePointer::SetHoverPercent(float Percent)
+void UGazeProcessor::SetHoverPercent(float Percent)
 {
 	static FName StaticLaserPercentParameterName("Percent");
 	HoverMID->SetScalarParameterValue(StaticLaserPercentParameterName, Percent);
-}
-
-void UGazePointer::DoAction_Implementation()
-{
-	if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
-	{
-		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
-		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
-		GazeInteractiveComponent->KeyDown(EKeys::Enter);
-		GazeInteractiveComponent->KeyUp(EKeys::Enter);
-	}
 }

@@ -3,29 +3,30 @@
 #pragma once
 
 #include "Engine.h"
-#include "GazePointer.generated.h"
+#include "GazeSelectProcessor.generated.h"
 
 
-enum class EGazeState : uint8
-{
-	None,
-	//point is on the actor
-	Stay,
-	//after stay duration,action cut down
-	Hover,
-	//action is exec
-	Actioned
-};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UGazePointer : public USceneComponent
+class UGazeSelectProcessor : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
-
+	enum class EGazeState : uint8
+	{
+		None,
+		//point is on the actor
+		Stay,
+		//after stay duration,action cut down
+		Hover,
+		//action is exec
+		Actioned
+	};
+	
 	// Sets default values for this component's properties
-	UGazePointer();
+	UGazeSelectProcessor();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -39,14 +40,18 @@ public:
 	void ProcessRayHit( bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit,bool bHaveRay);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Gaze")
-	void DoAction();
-	void DoAction_Implementation();
+	void DoHoverStart();
+	void DoHoverStart_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Gaze")
+	void DoHoverEnd();
+	void DoHoverEnd_Implementation();
 protected:
 	void CreatePointerMesh();
 	void CreateHoverMesh();
 	void LoadFromChildren();
 
-	void StartStay();
+	void StartStay(bool bShowHover);
 
 	void EndHover();
 

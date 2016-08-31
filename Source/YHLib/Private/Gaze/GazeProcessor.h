@@ -3,26 +3,25 @@
 #pragma once
 
 #include "Engine.h"
-#include "GazeSelectPointer.generated.h"
-
-
-enum class EGazeSelectState : uint8
-{
-	None,
-	//after stay duration,action cut down
-	Hover,
-	Hovered
-};
+#include "GazeProcessor.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UGazeSelectPointer : public USceneComponent
+class UGazeProcessor : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 
+	enum class EGazeSelectState : uint8
+	{
+		None,
+		//after stay duration,action cut down
+		Hover,
+		Hovered
+	};
+
 	// Sets default values for this component's properties
-	UGazeSelectPointer();
+	UGazeProcessor();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
