@@ -14,7 +14,7 @@ public:
 	// Sets default values for this component's properties
 	UGazeInteractiveComponent();
 
-	float GetActionDuration() const
+	virtual float GetActionDuration() const
 	{
 		return ActionDuration;
 	}

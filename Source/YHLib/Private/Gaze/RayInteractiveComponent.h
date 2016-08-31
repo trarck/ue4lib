@@ -43,17 +43,17 @@ public:
 
 	virtual bool IsProtrudeThrough();
 
-	FORCEINLINE bool HaveHoverColor() const
+	virtual bool HaveHoverColor() const
 	{
 		return bHaveHoverColor;
 	}
 
-	FORCEINLINE const FLinearColor& GetHoverColor()
+	virtual const FLinearColor& GetHoverColor()
 	{
 		return HoverColor;
 	}
 
-	FORCEINLINE bool IsShowDefaultHover() const
+	virtual bool IsShowDefaultHover() const
 	{
 		return bShowDefaultHover;
 	}
