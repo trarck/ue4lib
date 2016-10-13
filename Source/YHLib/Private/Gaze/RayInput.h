@@ -67,16 +67,16 @@ public:
 
 	//handle Input key event
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyDown(FKey Key);
+	virtual bool PressKey(FKey Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyUp(FKey Key);
+	virtual bool ReleaseKey(FKey Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyDownEvent(FKeyEvent KeyEvent);
+	virtual bool SendKeyDownEvent(FKeyEvent KeyEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool HandleKeyUpEvent(FKeyEvent KeyEvent);
+	virtual bool SendKeyUpEvent(FKeyEvent KeyEvent);
 
 protected:
 

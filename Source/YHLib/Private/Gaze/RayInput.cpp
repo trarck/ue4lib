@@ -169,7 +169,7 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);
 }
 
-bool  URayInput::HandleKeyDown(FKey Key)
+bool  URayInput::PressKey(FKey Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
@@ -178,7 +178,7 @@ bool  URayInput::HandleKeyDown(FKey Key)
 	return true;
 }
 
-bool  URayInput::HandleKeyUp(FKey Key)
+bool  URayInput::ReleaseKey(FKey Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
@@ -187,7 +187,7 @@ bool  URayInput::HandleKeyUp(FKey Key)
 	return true;
 }
 
-bool  URayInput::HandleKeyDownEvent(FKeyEvent KeyEvent)
+bool  URayInput::SendKeyDownEvent(FKeyEvent KeyEvent)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
@@ -196,7 +196,7 @@ bool  URayInput::HandleKeyDownEvent(FKeyEvent KeyEvent)
 	return true;
 }
 
-bool  URayInput::HandleKeyUpEvent(FKeyEvent KeyEvent)
+bool  URayInput::SendKeyUpEvent(FKeyEvent KeyEvent)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
