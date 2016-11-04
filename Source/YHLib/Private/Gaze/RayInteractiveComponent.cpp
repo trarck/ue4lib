@@ -28,7 +28,7 @@ void URayInteractiveComponent::RayExit(UActorComponent* HitComponent)
 	OnRayExit.Broadcast(HitComponent);
 }
 
-void URayInteractiveComponent::KeyDown(FKey Key)
+void URayInteractiveComponent::KeyDown(FKey Key, bool bRepeat)
 {
 	OnKeyDown.Broadcast(Key);
 }

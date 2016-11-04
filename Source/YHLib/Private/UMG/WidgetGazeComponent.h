@@ -22,7 +22,7 @@ public:
 
 	virtual void RayExit(UActorComponent* HitComponent) override;
 
-	virtual void KeyDown(FKey Key) override;
+	virtual void KeyDown(FKey Key, bool bRepeat = false) override;
 
 	virtual void KeyUp(FKey Key) override;
 

@@ -67,7 +67,7 @@ public:
 
 	//handle Input key event
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool PressKey(FKey Key);
+	virtual bool PressKey(FKey Key,bool bRepeat = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual bool ReleaseKey(FKey Key);

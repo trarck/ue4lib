@@ -169,11 +169,11 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);
 }
 
-bool  URayInput::PressKey(FKey Key)
+bool  URayInput::PressKey(FKey Key, bool bRepeat)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyDown(Key);
+		CurrentInteractiveComponent->KeyDown(Key,bRepeat);
 	}
 	return true;
 }

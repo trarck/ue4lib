@@ -27,7 +27,7 @@ public:
 
 	virtual void RayExit(UActorComponent* HitComponent);
 
-	virtual void KeyDown(FKey Key);
+	virtual void KeyDown(FKey Key, bool bRepeat = false);
 
 	virtual void KeyUp(FKey Key);	
 

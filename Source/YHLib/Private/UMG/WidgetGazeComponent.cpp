@@ -97,7 +97,7 @@ void UWidgetGazeComponent::RayStay(const FVector& HitLocation, UActorComponent* 
 
 void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent)
 {
-	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
+	UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 
 	FVector2D LastLocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
@@ -115,13 +115,13 @@ void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent)
 	FSlateApplication::Get().RoutePointerMoveEvent(FWidgetPath(), PointerEvent, false);
 }
 
-void UWidgetGazeComponent::KeyDown(FKey Key)
+void UWidgetGazeComponent::KeyDown(FKey Key, bool bRepeat)
 {
 	Super::KeyDown(Key);
 	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
 	{
 		FModifierKeysState ModifierKeys(false, false, false, false, false, false, false, false, false);
-		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, false, 0, 0);
+		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, bRepeat, 0, 0);
 		ActiveWidgetAndPointer.Widget->OnKeyDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
 	}
 }
