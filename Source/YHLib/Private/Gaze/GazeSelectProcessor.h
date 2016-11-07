@@ -90,6 +90,10 @@ protected:
 	UPROPERTY()
 	class UGazeInteractiveComponent* GazeInteractiveComponent;
 
+	//ref to RayInput
+	UPROPERTY()
+	class URayInput* RefRayInput;
+
 	float Elapsed;
 
 	float Duration;

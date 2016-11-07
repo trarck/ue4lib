@@ -13,7 +13,9 @@ URayInput::URayInput()
 	LastHitComponent(nullptr),
 	CurrentInteractiveComponent(nullptr),
 	RayLength(1000),
-	bIgnoreSelf(true)
+	bIgnoreSelf(true),
+	VirtualUserIndex(0),
+	PointerIndex(0)
 {
 	bWantsBeginPlay = true;
 
@@ -70,7 +72,7 @@ void URayInput::Process()
 					URayInteractiveComponent* LastRayInteractiveComponent = LastHitComponent->GetOwner()->FindComponentByClass<URayInteractiveComponent>();
 					if (LastRayInteractiveComponent != nullptr)
 					{
-						LastRayInteractiveComponent->RayExit(LastHitComponent);
+						LastRayInteractiveComponent->RayExit(LastHitComponent,this);
 					}
 				}
 
@@ -81,7 +83,7 @@ void URayInput::Process()
 				if (RayInteractiveComponent != nullptr)
 				{
 					//UE_LOG(LogRayInput, Log, TEXT("RayInput[%s] Have"), *(HitResult.GetComponent()->GetName()));
-					RayInteractiveComponent->RayEnter(HitResult.ImpactPoint, CurrentComponent, HitResult);
+					RayInteractiveComponent->RayEnter(HitResult.ImpactPoint, CurrentComponent, HitResult,this);
 				}
 				else
 				{
@@ -97,7 +99,7 @@ void URayInput::Process()
 				URayInteractiveComponent* RayInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
 				if (RayInteractiveComponent != nullptr)
 				{
-					RayInteractiveComponent->RayStay(HitResult.ImpactPoint, CurrentComponent, HitResult);
+					RayInteractiveComponent->RayStay(HitResult.ImpactPoint, CurrentComponent, HitResult,this);
 				}
 			}
 			//LastHitPoint = HitResult.ImpactPoint;
@@ -109,7 +111,7 @@ void URayInput::Process()
 			URayInteractiveComponent* LastRayInteractiveComponent = LastHitComponent->GetOwner()->FindComponentByClass<URayInteractiveComponent>();
 			if (LastRayInteractiveComponent != nullptr)
 			{
-				LastRayInteractiveComponent->RayExit(LastHitComponent);
+				LastRayInteractiveComponent->RayExit(LastHitComponent,this);
 			}
 
 			LastHitComponent = nullptr;
@@ -173,7 +175,7 @@ bool  URayInput::PressKey(FKey Key, bool bRepeat)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyDown(Key,bRepeat);
+		CurrentInteractiveComponent->KeyDown(Key,this,bRepeat);
 	}
 	return true;
 }
@@ -182,7 +184,7 @@ bool  URayInput::ReleaseKey(FKey Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyUp(Key);
+		CurrentInteractiveComponent->KeyUp(Key,this);
 	}
 	return true;
 }
@@ -191,7 +193,7 @@ bool  URayInput::SendKeyDownEvent(FKeyEvent KeyEvent)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyDownEvent(KeyEvent);
+		CurrentInteractiveComponent->KeyDownEvent(KeyEvent,this);
 	}
 	return true;
 }
@@ -200,10 +202,27 @@ bool  URayInput::SendKeyUpEvent(FKeyEvent KeyEvent)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyUpEvent(KeyEvent);
+		CurrentInteractiveComponent->KeyUpEvent(KeyEvent,this);
 	}
 	return true;
 }
+
+void URayInput::PressPointerKey(FKey Key)
+{
+	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
+	{
+		CurrentInteractiveComponent->PressPointerKey(Key, this);
+	}
+}
+
+void URayInput::ReleasePointerKey(FKey Key)
+{
+	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
+	{
+		CurrentInteractiveComponent->ReleasePointerKey(Key, this);
+	}
+}
+
 
 void URayInput::SetCaster(USceneComponent* CasterComponent)
 {

@@ -177,6 +177,7 @@ void UGazeSelectProcessor::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UGazeSelectProcessor::RegisterProcess(URayInput* RayInput)
 {
+	this->RefRayInput = RayInput;
 	if (RayInput)
 	{
 		RayInput->OnProcessRay.AddDynamic(this, &UGazeSelectProcessor::ProcessRayHit);
@@ -340,7 +341,7 @@ void UGazeSelectProcessor::DoHoverStart_Implementation()
 	{
 		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
 		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
-		GazeInteractiveComponent->KeyDown(EKeys::Enter);
+		GazeInteractiveComponent->KeyDown(EKeys::Enter,RefRayInput);
 		//GazeInteractiveComponent->KeyUp(EKeys::Enter);
 	}
 }
@@ -352,6 +353,6 @@ void UGazeSelectProcessor::DoHoverEnd_Implementation()
 		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
 		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
 		//GazeInteractiveComponent->KeyDown(EKeys::Enter);
-		GazeInteractiveComponent->KeyUp(EKeys::Enter);
+		GazeInteractiveComponent->KeyUp(EKeys::Enter, RefRayInput);
 	}
 }

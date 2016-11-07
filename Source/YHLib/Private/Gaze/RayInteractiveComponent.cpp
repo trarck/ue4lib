@@ -13,39 +13,49 @@ URayInteractiveComponent::URayInteractiveComponent()
 
 }
 
-void URayInteractiveComponent::RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void URayInteractiveComponent::RayEnter(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit, URayInput* RayInput)
 {
 	OnRayEnter.Broadcast(HitLocation, HitComponent, Hit);
 }
 
-void URayInteractiveComponent::RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit)
+void URayInteractiveComponent::RayStay(const FVector& HitLocation, UActorComponent* HitComponent, const FHitResult& Hit, URayInput* RayInput)
 {
 	OnRayStay.Broadcast(HitLocation, HitComponent, Hit);
 }
 
-void URayInteractiveComponent::RayExit(UActorComponent* HitComponent)
+void URayInteractiveComponent::RayExit(UActorComponent* HitComponent, URayInput* RayInput)
 {
 	OnRayExit.Broadcast(HitComponent);
 }
 
-void URayInteractiveComponent::KeyDown(FKey Key, bool bRepeat)
+void URayInteractiveComponent::KeyDown(FKey Key, URayInput* RayInput, bool bRepeat)
 {
 	OnKeyDown.Broadcast(Key);
 }
 
-void URayInteractiveComponent::KeyUp(FKey Key)
+void URayInteractiveComponent::KeyUp(FKey Key, URayInput* RayInput)
 {
 	OnKeyUp.Broadcast(Key);
 }
 
-void URayInteractiveComponent::KeyDownEvent(FKeyEvent KeyEvent)
+void URayInteractiveComponent::KeyDownEvent(FKeyEvent KeyEvent, URayInput* RayInput)
 {
 	OnKeyDown.Broadcast(KeyEvent.GetKey());
 }
 
-void URayInteractiveComponent::KeyUpEvent(FKeyEvent KeyEvent)
+void URayInteractiveComponent::KeyUpEvent(FKeyEvent KeyEvent, URayInput* RayInput)
 {
 	OnKeyUp.Broadcast(KeyEvent.GetKey());
+}
+
+void URayInteractiveComponent::PressPointerKey(FKey Key, URayInput* RayInput)
+{
+	OnPressPointer.Broadcast(Key);
+}
+
+void URayInteractiveComponent::ReleasePointerKey(FKey Key, URayInput* RayInput)
+{
+	OnReleasePointer.Broadcast(Key);
 }
 
 bool URayInteractiveComponent::IsHover()

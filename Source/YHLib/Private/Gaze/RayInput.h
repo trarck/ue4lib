@@ -26,6 +26,20 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Laser")
 	FProcessRaySignature OnProcessRay;
 
+	/**
+	* Represents the Virtual User Index.  Each virtual user should be represented by a different
+	* index number, this will maintain separate capture and focus states for them.  Each
+	* controller or finger-tip should get a unique PointerIndex.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser", meta = (ClampMin = "0", ExposeOnSpawn = true))
+	int32 VirtualUserIndex;
+
+	/**
+	* Each user virtual controller or virtual finger tips being simulated should use a different pointer index.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser", meta = (ClampMin = "0", UIMin = "0", UIMax = "9", ExposeOnSpawn = true))
+	int32 PointerIndex;
+
 	// Sets default values for this actor's properties
 	URayInput();
 
@@ -65,18 +79,45 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	void ClearIgnores();
 
-	//handle Input key event
+	/**
+     * handle key press by the keyboard
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual bool PressKey(FKey Key,bool bRepeat = false);
 
+	/**
+	 * handle key release by the keyboard
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual bool ReleaseKey(FKey Key);
 
+	/**
+	 * simulate keydown event
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual bool SendKeyDownEvent(FKeyEvent KeyEvent);
 
+	/**
+	 * simulate keyup event
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual bool SendKeyUpEvent(FKeyEvent KeyEvent);
+
+	/**
+	 * Presses a key as if the mouse/pointer were the source of it.  Normally you would just use
+	 * Left/Right mouse button for the Key.  However - advanced uses could also be imagined where you
+	 * send other keys to signal widgets to take special actions if they're under the cursor.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual void PressPointerKey(FKey Key);
+
+	/**
+	 * Presses a key as if the mouse/pointer were the source of it.  Normally you would just use
+	 * Left/Right mouse button for the Key.  However - advanced uses could also be imagined where you
+	 * send other keys to signal widgets to take special actions if they're under the cursor.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+	virtual void ReleasePointerKey(FKey Key);
 
 protected:
 
