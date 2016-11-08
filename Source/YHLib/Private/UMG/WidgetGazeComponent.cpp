@@ -186,7 +186,10 @@ void UWidgetGazeComponent::PressPointerKey(FKey Key, URayInput* RayInput)
 		0.0f,
 		ModifierKeys);
 	//ActiveWidgetAndPointer.Widget->OnMouseButtonDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	UE_LOG(LogWidgetGaze, Log, TEXT("PressPointerKey before %s"),*Key.GetDisplayName().ToString());
+
 	FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
+	UE_LOG(LogWidgetGaze, Log, TEXT("PressPointerKey after %s"), *Key.GetDisplayName().ToString());
 
 }
 
@@ -211,6 +214,7 @@ void UWidgetGazeComponent::ReleasePointerKey(FKey Key, URayInput* RayInput)
 		Key,
 		0.0f,
 		ModifierKeys);
+	UE_LOG(LogWidgetGaze, Log, TEXT("ReleasePointerKey before %s"), *Key.GetDisplayName().ToString());
 //	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
 	FReply Reply = FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
 }
