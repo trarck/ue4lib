@@ -28,27 +28,31 @@ void UWidgetGazeComponent::RayEnter(const FVector& HitLocation, UActorComponent*
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 
 	TArray<FWidgetAndPointer> widgets = WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false);
+	
+	LocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
 
 	FWidgetPath WidgetPathUnderFinger = FWidgetPath(widgets);
+
+	FPointerEvent PointerEvent(
+		RayInput->GetUserIndex(),
+		RayInput->PointerIndex,
+		LocalHitLocation,
+		LastLocalHitLocation,
+		PressedKeys,
+		FKey(),
+		0.0f,
+		ModifierKeys);
+
 	if (WidgetPathUnderFinger.IsValid())
 	{
-		LocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
-		FPointerEvent PointerEvent(
-			RayInput->VirtualUserIndex,
-			RayInput->PointerIndex,
-			LocalHitLocation,
-			LastLocalHitLocation,
-			PressedKeys,
-			FKey(),
-			0.0f,
-			ModifierKeys);
-
 		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
 
 		LastWigetPath = WidgetPathUnderFinger;
 	}
 	else
 	{
+		FWidgetPath EmptyWidgetPath;
+		FSlateApplication::Get().RoutePointerMoveEvent(EmptyWidgetPath, PointerEvent, false);
 		LastWigetPath = FWeakWidgetPath();
 	}
 
@@ -66,56 +70,12 @@ void UWidgetGazeComponent::RayStay(const FVector& HitLocation, UActorComponent* 
 	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayStay"));
 	UWidgetComponent* WidgetComponent = Cast<UWidgetComponent>(HitComponent);
 	TArray<FWidgetAndPointer> widgets = WidgetComponent->GetHitWidgetPath(HitLocation, /*bIgnoreEnabledStatus*/ false);
+	LocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
+
 	FWidgetPath WidgetPathUnderFinger = FWidgetPath(widgets);
-	if (WidgetPathUnderFinger.IsValid())
-	{
-		LocalHitLocation = WidgetComponent->GetLastLocalHitLocation();
-
-		FPointerEvent PointerEvent(
-			RayInput->VirtualUserIndex,
-			RayInput->PointerIndex,
-			LocalHitLocation,
-			LastLocalHitLocation,
-			PressedKeys,
-			FKey(),
-			0.0f,
-			ModifierKeys);
-
-		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
-
-		LastLocalHitLocation = LocalHitLocation;
-
-		LastWigetPath = WidgetPathUnderFinger;
-
-		if (widgets.Num() > 0)
-		{
-			if (!(ActiveWidgetAndPointer == widgets.Last()))
-			{
-				ActiveWidgetAndPointer = widgets.Last();
-				bWidgetChange = true;
-			}
-			else
-			{
-				bWidgetChange = false;
-			}
-
-			bWidgetHover = IsWidgetInteractive(ActiveWidgetAndPointer.Widget);
-		}
-	}
-	else
-	{
-		LastWigetPath = FWeakWidgetPath();
-	}
-
-}
-
-void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent, URayInput* RayInput)
-{
-	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
-	LastWigetPath = FWeakWidgetPath();
 
 	FPointerEvent PointerEvent(
-		RayInput->VirtualUserIndex,
+		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
 		LocalHitLocation,
 		LastLocalHitLocation,
@@ -124,7 +84,59 @@ void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent, URayInput* Ray
 		0.0f,
 		ModifierKeys);
 
-	FSlateApplication::Get().RoutePointerMoveEvent(FWidgetPath(), PointerEvent, false);
+	if (WidgetPathUnderFinger.IsValid())
+	{
+		FSlateApplication::Get().RoutePointerMoveEvent(WidgetPathUnderFinger, PointerEvent, false);
+		LastWigetPath = WidgetPathUnderFinger;
+	}
+	else
+	{
+		FWidgetPath EmptyWidgetPath;
+		FSlateApplication::Get().RoutePointerMoveEvent(EmptyWidgetPath, PointerEvent, false);
+		LastWigetPath = FWeakWidgetPath();
+	}
+
+	LastLocalHitLocation = LocalHitLocation;
+
+	if (widgets.Num() > 0)
+	{
+		if (!(ActiveWidgetAndPointer == widgets.Last()))
+		{
+			ActiveWidgetAndPointer = widgets.Last();
+			bWidgetChange = true;
+		}
+		else
+		{
+			bWidgetChange = false;
+		}
+
+		bWidgetHover = IsWidgetInteractive(ActiveWidgetAndPointer.Widget);
+	}
+}
+
+void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent, URayInput* RayInput)
+{
+	//UE_LOG(LogWidgetGaze, Log, TEXT("OnRayExit"));
+
+	LocalHitLocation = FVector2D(0, 0);
+
+	FWidgetPath EmptyWidgetPath;
+
+	FPointerEvent PointerEvent(
+		RayInput->GetUserIndex(),
+		RayInput->PointerIndex,
+		LocalHitLocation,
+		LastLocalHitLocation,
+		PressedKeys,
+		FKey(),
+		0.0f,
+		ModifierKeys);
+
+	FSlateApplication::Get().RoutePointerMoveEvent(EmptyWidgetPath, PointerEvent, false);
+
+	LastWigetPath = FWeakWidgetPath();
+
+	LastLocalHitLocation = LocalHitLocation;
 }
 
 void UWidgetGazeComponent::KeyDown(FKey Key, URayInput* RayInput, bool bRepeat)
@@ -177,7 +189,7 @@ void UWidgetGazeComponent::PressPointerKey(FKey Key, URayInput* RayInput)
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 
 	FPointerEvent PointerEvent(
-		RayInput->VirtualUserIndex,
+		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
 		LocalHitLocation,
 		LastLocalHitLocation,
@@ -186,10 +198,10 @@ void UWidgetGazeComponent::PressPointerKey(FKey Key, URayInput* RayInput)
 		0.0f,
 		ModifierKeys);
 	//ActiveWidgetAndPointer.Widget->OnMouseButtonDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
-	UE_LOG(LogWidgetGaze, Log, TEXT("PressPointerKey before %s"),*Key.GetDisplayName().ToString());
+	UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 
 	FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
-	UE_LOG(LogWidgetGaze, Log, TEXT("PressPointerKey after %s"), *Key.GetDisplayName().ToString());
+	UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());
 
 }
 
@@ -206,7 +218,7 @@ void UWidgetGazeComponent::ReleasePointerKey(FKey Key, URayInput* RayInput)
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 
 	FPointerEvent PointerEvent(
-		RayInput->VirtualUserIndex,
+		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
 		LocalHitLocation,
 		LastLocalHitLocation,
@@ -214,7 +226,7 @@ void UWidgetGazeComponent::ReleasePointerKey(FKey Key, URayInput* RayInput)
 		Key,
 		0.0f,
 		ModifierKeys);
-	UE_LOG(LogWidgetGaze, Log, TEXT("ReleasePointerKey before %s"), *Key.GetDisplayName().ToString());
+	UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 //	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
 	FReply Reply = FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
 }

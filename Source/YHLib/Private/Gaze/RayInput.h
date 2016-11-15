@@ -119,6 +119,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 	virtual void ReleasePointerKey(FKey Key);
 
+	int32 GetUserIndex();
+
 protected:
 
 	//Actors don't check
@@ -137,4 +139,5 @@ protected:
 
 	//FVector LastHitPoint;
 
+	TSharedPtr<FSlateVirtualUser> VirtualUser;
 };

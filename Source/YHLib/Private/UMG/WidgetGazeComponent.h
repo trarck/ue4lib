@@ -55,6 +55,7 @@ protected:
 	FWeakWidgetPath LastWigetPath;
 
 	FWidgetAndPointer ActiveWidgetAndPointer;
+	//TWeakPtr<SWidget> ActiveWidget;
 
 	/** The modifier keys to simulate during key presses. */
 	FModifierKeysState ModifierKeys;

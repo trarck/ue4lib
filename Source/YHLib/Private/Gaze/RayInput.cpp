@@ -33,6 +33,14 @@ void URayInput::BeginPlay()
 	{
 		AddIgnoreActor(GetOwner());
 	}
+
+	if (FSlateApplication::IsInitialized())
+	{
+		if (!VirtualUser.IsValid())
+		{
+			VirtualUser = FSlateApplication::Get().FindOrCreateVirtualUser(VirtualUserIndex);
+		}
+	}
 	UE_LOG(LogRayInput, Log, TEXT("RayInput BeginPlay"));
 }
 
@@ -139,8 +147,7 @@ bool URayInput::GetRayPointer(FVector& RayStart, FVector& RayEnd)
 
 bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, const TArray<AActor*>& OptionalListOfIgnoredActors, FHitResult& Hit)
 {
-	const bool bTraceComplex = true;
-	FCollisionQueryParams TraceParams(NAME_None, bTraceComplex, nullptr);
+	FCollisionQueryParams TraceParams= FCollisionQueryParams::DefaultQueryParam;
 
 	if (OptionalListOfIgnoredActors.Num() > 0)
 	{
@@ -240,4 +247,13 @@ void URayInput::AddIgnoreActor(AActor* Actor)
 void URayInput::ClearIgnores()
 {
 	DefaultIgnores.Empty();
+}
+
+int32 URayInput::GetUserIndex()
+{
+	if (VirtualUser.IsValid())
+	{
+		return VirtualUser->GetUserIndex();
+	}
+	return  SlateApplicationDefs::MaxHardwareUsers;
 }
