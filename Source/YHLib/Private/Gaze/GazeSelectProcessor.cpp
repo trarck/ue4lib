@@ -308,6 +308,9 @@ void UGazeSelectProcessor::StartStay(bool bShowHover)
 
 void UGazeSelectProcessor::EndHover()
 {
+	if(State == EGazeState::None) return;
+	
+	//UE_LOG(LogRayCaster, Log, TEXT("EndHover state:%d"),(int)State);
 	if (State >=EGazeState::Hover)
 	{
 		HoverMeshComponent->SetVisibility(false);
@@ -317,6 +320,11 @@ void UGazeSelectProcessor::EndHover()
 	{
 		SetLaserVisuals(GazeColor);
 		bChangeColor = false;
+	}
+
+	if (State == EGazeState::Hover)
+	{
+		DoHoverEnd();
 	}
 
 	State = EGazeState::None;
@@ -337,22 +345,31 @@ void UGazeSelectProcessor::SetHoverPercent(float Percent)
 
 void UGazeSelectProcessor::DoHoverStart_Implementation()
 {
-	if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
+	if (RefRayInput && RefRayInput->IsValidLowLevel())
 	{
-		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
-		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
-		GazeInteractiveComponent->KeyDown(EKeys::Enter,RefRayInput);
-		//GazeInteractiveComponent->KeyUp(EKeys::Enter);
+		RefRayInput->PressPointerKey(EKeys::LeftMouseButton);
 	}
+
+	//if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
+	//{
+	//	//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
+	//	//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
+	//	GazeInteractiveComponent->KeyDown(EKeys::Enter,RefRayInput);
+	//	//GazeInteractiveComponent->KeyUp(EKeys::Enter);
+	//}
 }
 
 void UGazeSelectProcessor::DoHoverEnd_Implementation()
 {
-	if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
+	if (RefRayInput && RefRayInput->IsValidLowLevel())
 	{
-		//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
-		//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
-		//GazeInteractiveComponent->KeyDown(EKeys::Enter);
-		GazeInteractiveComponent->KeyUp(EKeys::Enter, RefRayInput);
+		RefRayInput->ReleasePointerKey(EKeys::LeftMouseButton);
 	}
+	//if (GazeInteractiveComponent && GazeInteractiveComponent->IsValidLowLevel())
+	//{
+	//	//GazeInteractiveComponent->KeyDown(EKeys::LeftMouseButton);
+	//	//GazeInteractiveComponent->KeyUp(EKeys::LeftMouseButton);
+	//	//GazeInteractiveComponent->KeyDown(EKeys::Enter);
+	//	GazeInteractiveComponent->KeyUp(EKeys::Enter, RefRayInput);
+	//}
 }
