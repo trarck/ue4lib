@@ -37,6 +37,8 @@ public:
 
 	virtual void KeyUpEvent(FKeyEvent KeyEvent, URayInput* RayInput);
 
+	virtual void ProcessKeyChar(const FString& Characters, URayInput* RayInput,bool bRepeat);
+
 	virtual void PressPointerKey(FKey Key, URayInput* RayInput);
 
 	virtual void ReleasePointerKey(FKey Key, URayInput* RayInput);
@@ -62,6 +64,11 @@ public:
 	virtual bool IsShowDefaultHover() const
 	{
 		return bShowDefaultHover;
+	}
+
+	virtual float GetActionDuration() const
+	{
+		return ActionDuration;
 	}
 
 public://event
@@ -98,4 +105,8 @@ protected:
 	//show hover animation by hover,no default hover animation
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Laser")
 	bool bShowDefaultHover;
+
+	/** auto response input action.zero use global config*/
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Gaze")
+	float ActionDuration;
 };

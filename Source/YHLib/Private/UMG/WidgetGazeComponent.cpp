@@ -142,38 +142,68 @@ void UWidgetGazeComponent::RayExit(UActorComponent* HitComponent, URayInput* Ray
 void UWidgetGazeComponent::KeyDown(FKey Key, URayInput* RayInput, bool bRepeat)
 {
 	Super::KeyDown(Key, RayInput, bRepeat);
-	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+
+	const uint32* KeyCodePtr;
+	const uint32* CharCodePtr;
+	FInputKeyManager::Get().GetCodesFromKey(Key, KeyCodePtr, CharCodePtr);
+
+	uint32 KeyCode = KeyCodePtr ? *KeyCodePtr : 0;
+	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
+
+	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), bRepeat, KeyCode, CharCode);
+	bool DownResult = FSlateApplication::Get().ProcessKeyDownEvent(KeyEvent);
+
+	if (CharCodePtr)
 	{
-		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, bRepeat, 0, 0);
-		ActiveWidgetAndPointer.Widget->OnKeyDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
+		FCharacterEvent CharacterEvent(CharCode, ModifierKeys, RayInput->GetUserIndex(), bRepeat);
+		FSlateApplication::Get().ProcessKeyCharEvent(CharacterEvent);
 	}
 }
 
 void UWidgetGazeComponent::KeyUp(FKey Key, URayInput* RayInput)
 {
 	Super::KeyUp(Key, RayInput);
-	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
-	{
-		FKeyEvent KeyEvent(Key, ModifierKeys, 0/*UserIndex*/, false, 0, 0);
-		ActiveWidgetAndPointer.Widget->OnKeyUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
-	}
+
+	const uint32* KeyCodePtr;
+	const uint32* CharCodePtr;
+	FInputKeyManager::Get().GetCodesFromKey(Key, KeyCodePtr, CharCodePtr);
+
+	uint32 KeyCode = KeyCodePtr ? *KeyCodePtr : 0;
+	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
+
+	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), false, KeyCode, CharCode);
+	FSlateApplication::Get().ProcessKeyUpEvent(KeyEvent);
 }
 
 void UWidgetGazeComponent::KeyDownEvent(FKeyEvent KeyEvent, URayInput* RayInput)
 {
 	Super::KeyDownEvent(KeyEvent, RayInput);
-	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+
+	bool DownResult = FSlateApplication::Get().ProcessKeyDownEvent(KeyEvent);
+
+	if (KeyEvent.GetCharacter())
 	{
-		ActiveWidgetAndPointer.Widget->OnKeyDown(ActiveWidgetAndPointer.Geometry, KeyEvent);
+		FCharacterEvent CharacterEvent(KeyEvent.GetCharacter(), ModifierKeys, RayInput->GetUserIndex(), KeyEvent.IsRepeat());
+		FSlateApplication::Get().ProcessKeyCharEvent(CharacterEvent);
 	}
 }
 
 void UWidgetGazeComponent::KeyUpEvent(FKeyEvent KeyEvent, URayInput* RayInput)
 {
 	Super::KeyUpEvent(KeyEvent, RayInput);
-	if (!(ActiveWidgetAndPointer == FWidgetAndPointer::NullWidget))
+	FSlateApplication::Get().ProcessKeyUpEvent(KeyEvent);
+}
+
+void UWidgetGazeComponent::ProcessKeyChar(const FString& Characters, URayInput* RayInput,bool bRepeat)
+{
+	bool bProcessResult = false;
+
+	for (int32 CharIndex = 0; CharIndex < Characters.Len(); CharIndex++)
 	{
-		ActiveWidgetAndPointer.Widget->OnKeyUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
+		TCHAR CharKey = Characters[CharIndex];
+
+		FCharacterEvent CharacterEvent(CharKey, ModifierKeys, RayInput->GetUserIndex(), bRepeat);
+		bProcessResult |= FSlateApplication::Get().ProcessKeyCharEvent(CharacterEvent);
 	}
 }
 

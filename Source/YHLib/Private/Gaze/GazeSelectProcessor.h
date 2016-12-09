@@ -88,7 +88,7 @@ protected:
 	UMaterialInstanceDynamic* HoverMID;
 
 	UPROPERTY()
-	class UGazeInteractiveComponent* GazeInteractiveComponent;
+	class URayInteractiveComponent* GazeInteractiveComponent;
 
 	//ref to RayInput
 	UPROPERTY()

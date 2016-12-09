@@ -6,6 +6,11 @@
 #include "RayInput.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult, bool, bBeginHit,bool,bHaveRay);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPressKeySignature, const FKey& ,Key, bool ,bRepeat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FReleaseKeySignature, const FKey&, Key);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSendKeyCharSignature, const FString& ,Characters, bool, bRepeat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPressPointerKeySignature, const FKey&, Key);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FReleasePointerKeySignature, const FKey&, Key);
 
 UCLASS(Blueprintable,ClassGroup = (Input), meta = (BlueprintSpawnableComponent))
 class URayInput : public UActorComponent
@@ -25,6 +30,21 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Laser")
 	FProcessRaySignature OnProcessRay;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FPressKeySignature OnPressKey;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FReleaseKeySignature OnReleaseKey;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FSendKeyCharSignature OnSendKeyChar;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FPressPointerKeySignature OnPressPointerKey;
+
+	UPROPERTY(BlueprintAssignable, Category = "Laser")
+	FReleasePointerKeySignature OnReleasePointerKey;
 
 	/**
 	* Represents the Virtual User Index.  Each virtual user should be represented by a different
@@ -83,25 +103,20 @@ public:
      * handle key press by the keyboard
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool PressKey(FKey Key,bool bRepeat = false);
+	virtual bool PressKey(const FKey& Key,bool bRepeat = false);
 
 	/**
 	 * handle key release by the keyboard
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool ReleaseKey(FKey Key);
+	virtual bool ReleaseKey(const FKey& Key);
 
 	/**
-	 * simulate keydown event
-	 */
+	* Transmits a list of characters to a widget by simulating a OnKeyChar event for each key listed in
+	* the string.
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool SendKeyDownEvent(FKeyEvent KeyEvent);
-
-	/**
-	 * simulate keyup event
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual bool SendKeyUpEvent(FKeyEvent KeyEvent);
+	bool SendKeyChar(const FString& Characters, bool bRepeat);
 
 	/**
 	 * Presses a key as if the mouse/pointer were the source of it.  Normally you would just use
@@ -109,7 +124,7 @@ public:
 	 * send other keys to signal widgets to take special actions if they're under the cursor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual void PressPointerKey(FKey Key);
+	virtual void PressPointerKey(const FKey& Key);
 
 	/**
 	 * Presses a key as if the mouse/pointer were the source of it.  Normally you would just use
@@ -117,7 +132,7 @@ public:
 	 * send other keys to signal widgets to take special actions if they're under the cursor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Laser")
-	virtual void ReleasePointerKey(FKey Key);
+	virtual void ReleasePointerKey(const FKey& Key);
 
 	int32 GetUserIndex();
 

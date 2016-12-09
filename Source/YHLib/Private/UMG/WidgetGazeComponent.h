@@ -3,12 +3,11 @@
 #pragma once
 
 
-#include "Gaze/GazeInteractiveComponent.h"
+#include "Gaze/RayInteractiveComponent.h"
 #include "WidgetGazeComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UWidgetGazeComponent : public UGazeInteractiveComponent
+class UWidgetGazeComponent : public URayInteractiveComponent
 {
 	GENERATED_BODY()
 
@@ -29,6 +28,8 @@ public:
 	virtual void KeyDownEvent(FKeyEvent KeyEvent, URayInput* RayInput) override;
 
 	virtual void KeyUpEvent(FKeyEvent KeyEvent, URayInput* RayInput) override;
+
+	virtual void ProcessKeyChar(const FString& Characters, URayInput* RayInput,bool bRepeat) override;
 
 	virtual void PressPointerKey(FKey Key, URayInput* RayInput) override;
 

@@ -53,6 +53,11 @@ void URayInteractiveComponent::PressPointerKey(FKey Key, URayInput* RayInput)
 	OnPressPointer.Broadcast(Key);
 }
 
+void URayInteractiveComponent::ProcessKeyChar(const FString& Characters, URayInput* RayInput,bool bRepeat)
+{
+
+}
+
 void URayInteractiveComponent::ReleasePointerKey(FKey Key, URayInput* RayInput)
 {
 	OnReleasePointer.Broadcast(Key);

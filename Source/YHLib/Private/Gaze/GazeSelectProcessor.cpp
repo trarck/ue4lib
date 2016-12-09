@@ -5,7 +5,6 @@
 
 #include "RayInput.h"
 #include "RayInteractiveComponent.h"
-#include "GazeInteractiveComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
 
@@ -202,7 +201,7 @@ void UGazeSelectProcessor::ProcessRayHit(bool bHit, const FVector&  Start, const
 		if (bHit)
 		{
 			bool bProtrudeThrough = bPenetrate;
-			GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<UGazeInteractiveComponent>();
+			GazeInteractiveComponent = HitResult.GetActor()->FindComponentByClass<URayInteractiveComponent>();
 
 			//check should response gaze
 			if (GazeInteractiveComponent)

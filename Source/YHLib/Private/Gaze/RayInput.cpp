@@ -178,58 +178,53 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 	//return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, *ObjectParams, TraceParams);
 }
 
-bool  URayInput::PressKey(FKey Key, bool bRepeat)
+bool  URayInput::PressKey(const FKey& Key, bool bRepeat)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
 		CurrentInteractiveComponent->KeyDown(Key,this,bRepeat);
 	}
+	OnPressKey.Broadcast(Key, bRepeat);
 	return true;
 }
 
-bool  URayInput::ReleaseKey(FKey Key)
+bool  URayInput::ReleaseKey(const FKey& Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
 		CurrentInteractiveComponent->KeyUp(Key,this);
 	}
+	OnReleaseKey.Broadcast(Key);
 	return true;
 }
 
-bool  URayInput::SendKeyDownEvent(FKeyEvent KeyEvent)
+bool URayInput::SendKeyChar(const FString& Characters, bool bRepeat)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
-		CurrentInteractiveComponent->KeyDownEvent(KeyEvent,this);
-	}
+		CurrentInteractiveComponent->ProcessKeyChar(Characters, this,bRepeat);
+	}	
+	OnSendKeyChar.Broadcast(Characters, bRepeat);
 	return true;
 }
 
-bool  URayInput::SendKeyUpEvent(FKeyEvent KeyEvent)
-{
-	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
-	{
-		CurrentInteractiveComponent->KeyUpEvent(KeyEvent,this);
-	}
-	return true;
-}
-
-void URayInput::PressPointerKey(FKey Key)
+void URayInput::PressPointerKey(const FKey& Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
 		CurrentInteractiveComponent->PressPointerKey(Key, this);
 	}
+	OnPressPointerKey.Broadcast(Key);
 }
 
-void URayInput::ReleasePointerKey(FKey Key)
+void URayInput::ReleasePointerKey(const FKey& Key)
 {
 	if (CurrentInteractiveComponent && CurrentInteractiveComponent->IsValidLowLevel())
 	{
 		CurrentInteractiveComponent->ReleasePointerKey(Key, this);
 	}
+	OnReleasePointerKey.Broadcast(Key);
 }
-
 
 void URayInput::SetCaster(USceneComponent* CasterComponent)
 {
