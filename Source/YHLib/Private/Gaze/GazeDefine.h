@@ -1,0 +1,8 @@
+#pragma once
+#include "Engine.h"
+
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=13
+#define USE_NEW_INPUT_SYSTEM 1
+#else
+#define USE_NEW_INPUT_SYSTEM 0
+#endif //ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=13

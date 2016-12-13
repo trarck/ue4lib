@@ -21,7 +21,11 @@ void UTestSceneComponent::CreateComponents()
 	// Laser pointer
 	{
 		LaserPointerMeshComponent = NewObject<UStaticMeshComponent>(Owner, TEXT("LaserPointerMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 		LaserPointerMeshComponent->SetupAttachment(this);
+#else
+		LaserPointerMeshComponent->AttachParent = this;
+#endif
 
 
 		UStaticMesh* LaserPointerMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/LaserPointer/LaserPointerMesh"));
@@ -56,7 +60,11 @@ void UTestSceneComponent::CreateComponents()
 	// Hover cue for laser pointer
 	{
 		HoverMeshComponent = NewObject<UStaticMeshComponent>(Owner,TEXT("HoverMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 		HoverMeshComponent->SetupAttachment(this);
+#else
+		HoverMeshComponent->AttachParent = this;
+#endif
 
 		UStaticMesh* HoverMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/LaserPointer/HoverMesh"));
 		if (HoverMesh)
@@ -70,7 +78,11 @@ void UTestSceneComponent::CreateComponents()
 		// Add a light!
 		{
 			HoverPointLightComponent = NewObject<UPointLightComponent>(Owner,TEXT("HoverPointLightComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 			HoverPointLightComponent->SetupAttachment(HoverMeshComponent);
+#else
+			HoverPointLightComponent->AttachParent = this;
+#endif
 
 			HoverPointLightComponent->SetLightColor(FLinearColor::Red);
 			HoverPointLightComponent->SetIntensity(30.0f);

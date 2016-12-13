@@ -35,7 +35,11 @@ void UGazeSelectProcessor::CreatePointerMesh()
 {
 	// Laser pointer
 	PointerMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("LaserPointerMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	PointerMeshComponent->SetupAttachment(this);
+#else
+	PointerMeshComponent->AttachParent = this;
+#endif
 	PointerMeshComponent->RegisterComponent();
 
 
@@ -64,7 +68,11 @@ void UGazeSelectProcessor::CreateHoverMesh()
 	UE_LOG(LogRayCaster, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
 	HoverMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("HoverMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	HoverMeshComponent->SetupAttachment(this);
+#else
+	HoverMeshComponent->AttachParent = this;
+#endif
 	HoverMeshComponent->RegisterComponent();
 
 	UStaticMesh* HoverMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Meshes/Geometry/Quad"));
@@ -90,7 +98,11 @@ void UGazeSelectProcessor::CreateHoverMesh()
 
 void UGazeSelectProcessor::LoadFromChildren()
 {
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
+#else
+	const TArray<USceneComponent*>& Children = this->AttachChildren;
+#endif
 	for (int i = 0; i < Children.Num(); ++i)
 	{
 		if (Children[i]->ComponentHasTag(FName(TEXT("LaserPoint"))))

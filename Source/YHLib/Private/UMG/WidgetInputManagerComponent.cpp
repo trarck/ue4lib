@@ -74,11 +74,15 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 		if (HoveredWidgetComponent)
 		{
 			WidgetPathUnderFinger = FWidgetPath(HoveredWidgetComponent->GetHitWidgetPath(HitResult.ImpactPoint, /*bIgnoreEnabledStatus*/ false));
+#if USE_NEW_INPUT_SYSTEM
 			LocalHitLocation = HoveredWidgetComponent->GetLastLocalHitLocation();
+#else
+			HoveredWidgetComponent->GetLocalHitLocation(HitResult.ImpactPoint, LocalHitLocation);
+#endif	//USE_NEW_INPUT_SYSTEM
 		}
 	}
 
-	
+#if USE_NEW_INPUT_SYSTEM
 	FPointerEvent PointerEvent(
 		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
@@ -88,7 +92,16 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 		FKey(),
 		0.0f,
 		ModifierKeys);
-
+#else
+	FPointerEvent PointerEvent(
+		1+RayInput->PointerIndex,
+		LocalHitLocation,
+		LastLocalHitLocation,
+		PressedKeys,
+		FKey(),
+		0.0f,
+		ModifierKeys);
+#endif //USE_NEW_INPUT_SYSTEM
 	if (WidgetPathUnderFinger.IsValid())
 	{
 		//UE_LOG(LogWidgetGaze, Log, TEXT("move"));
@@ -105,12 +118,12 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 
 		LastWigetPath = FWeakWidgetPath();
 	}
-
+#if USE_NEW_INPUT_SYSTEM
 	if (HoveredWidgetComponent)
 	{
 		HoveredWidgetComponent->RequestRedraw();
 	}
-
+#endif //USE_NEW_INPUT_SYSTEM
 	LastLocalHitLocation = LocalHitLocation;
 
 	if (WidgetPathUnderFinger.IsValid())
@@ -138,10 +151,12 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 
 	if (HoveredWidgetComponent != OldHoveredWidget)
 	{
+#if USE_NEW_INPUT_SYSTEM
 		if (OldHoveredWidget)
 		{
 			OldHoveredWidget->RequestRedraw();
 		}
+#endif //USE_NEW_INPUT_SYSTEM
 		bWidgetChange = true;
 	}
 }
@@ -201,6 +216,7 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 
+#if USE_NEW_INPUT_SYSTEM
 	FPointerEvent PointerEvent(
 		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
@@ -210,6 +226,16 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		Key,
 		0.0f,
 		ModifierKeys);
+#else
+	FPointerEvent PointerEvent(
+		1+RayInput->PointerIndex,
+		LocalHitLocation,
+		LastLocalHitLocation,
+		PressedKeys,
+		Key,
+		0.0f,
+		ModifierKeys);	
+#endif //USE_NEW_INPUT_SYSTEM
 	//UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 
 	FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
@@ -225,7 +251,7 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 	PressedKeys.Remove(Key);
 
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-
+#if USE_NEW_INPUT_SYSTEM
 	FPointerEvent PointerEvent(
 		RayInput->GetUserIndex(),
 		RayInput->PointerIndex,
@@ -235,9 +261,19 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 		Key,
 		0.0f,
 		ModifierKeys);
+#else
+	FPointerEvent PointerEvent(
+		1+RayInput->PointerIndex,
+		LocalHitLocation,
+		LastLocalHitLocation,
+		PressedKeys,
+		Key,
+		0.0f,
+		ModifierKeys);
+#endif
 	//UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 //	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
-	FReply Reply = FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
+	FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
 }
 
 bool UWidgetInputManagerComponent::IsHoverChanged()

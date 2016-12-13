@@ -34,6 +34,7 @@ void URayInput::BeginPlay()
 		AddIgnoreActor(GetOwner());
 	}
 
+#if USE_NEW_INPUT_SYSTEM
 	if (FSlateApplication::IsInitialized())
 	{
 		if (!VirtualUser.IsValid())
@@ -41,6 +42,7 @@ void URayInput::BeginPlay()
 			VirtualUser = FSlateApplication::Get().FindOrCreateVirtualUser(VirtualUserIndex);
 		}
 	}
+#endif //USE_NEW_INPUT_SYSTEM
 	UE_LOG(LogRayInput, Log, TEXT("RayInput BeginPlay"));
 }
 
@@ -169,7 +171,7 @@ bool URayInput::GetHitResult(const FVector& RayStart, const FVector& RayEnd, con
 	{
 		//EverythingButGizmos
 		FCollisionObjectQueryParams ObjectParams(FCollisionObjectQueryParams::AllObjects);
-		ObjectParams.RemoveObjectTypesToQuery(COLLISION_GIZMO);
+		ObjectParams.RemoveObjectTypesToQuery(ECC_EngineTraceChannel1);
 		return GetWorld()->LineTraceSingleByObjectType(Hit, RayStart, RayEnd, ObjectParams, TraceParams);
 		//*ObjectParams= FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects);
 		//ObjectParams->RemoveObjectTypesToQuery(COLLISION_GIZMO);
@@ -246,9 +248,13 @@ void URayInput::ClearIgnores()
 
 int32 URayInput::GetUserIndex()
 {
+#if USE_NEW_INPUT_SYSTEM
 	if (VirtualUser.IsValid())
 	{
 		return VirtualUser->GetUserIndex();
 	}
 	return  SlateApplicationDefs::MaxHardwareUsers;
+#else
+	return VirtualUserIndex;
+#endif //USE_NEW_INPUT_SYSTEM
 }

@@ -153,6 +153,7 @@ protected:
 	class URayInteractiveComponent* CurrentInteractiveComponent;
 
 	//FVector LastHitPoint;
-
+#if USE_NEW_INPUT_SYSTEM
 	TSharedPtr<FSlateVirtualUser> VirtualUser;
+#endif //USE_NEW_INPUT_SYSTEM
 };

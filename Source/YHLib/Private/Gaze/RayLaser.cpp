@@ -34,7 +34,11 @@ void URayLaser::CreateLaserPointerMesh()
 
 	// Laser pointer
 	LaserPointerMeshComponent = NewObject<UStaticMeshComponent>(Owner, TEXT("LaserPointerMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	LaserPointerMeshComponent->SetupAttachment(this);
+#else
+	LaserPointerMeshComponent->AttachParent = this;
+#endif
 	LaserPointerMeshComponent->RegisterComponent();
 
 
@@ -73,7 +77,11 @@ void URayLaser::CreateHoverMesh()
 	UE_LOG(LogRayLaser, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
 	HoverMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("HoverMeshComponent"));
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	HoverMeshComponent->SetupAttachment(this);
+#else
+	HoverMeshComponent->AttachParent=this;
+#endif
 	HoverMeshComponent->RegisterComponent();
 
 	UStaticMesh* HoverMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/LaserPointer/HoverMesh"));
@@ -96,7 +104,11 @@ void URayLaser::CreateHoverPointLight()
 
 	if (HoverMeshComponent)
 	{
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 		HoverPointLightComponent->SetupAttachment(HoverMeshComponent);
+#else
+		HoverPointLightComponent->AttachParent = HoverMeshComponent;
+#endif
 	}
 
 	HoverPointLightComponent->RegisterComponent();
@@ -111,7 +123,11 @@ void URayLaser::CreateHoverPointLight()
 
 void URayLaser::LoadFromChildren()
 {
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
+#else
+	const TArray<USceneComponent*>& Children = AttachChildren;
+#endif
 	for (int i = 0; i < Children.Num(); ++i)
 	{
 		if (Children[i]->ComponentHasTag(FName(TEXT("LaserPoint"))))
@@ -129,7 +145,11 @@ void URayLaser::LoadFromChildren()
 
 	if (HoverMeshComponent)
 	{
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
 		const TArray<USceneComponent*>& HoverChildren = HoverMeshComponent->GetAttachChildren();
+#else
+		const TArray<USceneComponent*>& HoverChildren = HoverMeshComponent->AttachChildren;
+#endif
 		for (int i = 0; i < HoverChildren.Num(); ++i)
 		{
 			if (HoverChildren[i]->ComponentHasTag(FName(TEXT("HoverPointLight"))))
