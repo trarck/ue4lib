@@ -4,7 +4,7 @@
 #include "TestActorComponent.h"
 
 
-DEFINE_LOG_CATEGORY_STATIC(LogTest, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogTestActor, Log, All);
 
 // Sets default values for this component's properties
 UTestActorComponent::UTestActorComponent()
@@ -17,7 +17,7 @@ UTestActorComponent::UTestActorComponent()
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = true;
-	UE_LOG(LogTest, Log, TEXT("TestActorComponent::Construct"));
+	UE_LOG(LogTestActor, Log, TEXT("TestActorComponent::Construct"));
 	// ...
 }
 
@@ -26,7 +26,7 @@ UTestActorComponent::UTestActorComponent()
 void UTestActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTest, Log, TEXT("TestActorComponent::BeginPlay"));
+	UE_LOG(LogTestActor, Log, TEXT("TestActorComponent::BeginPlay"));
 	// ...
 	
 }
@@ -65,7 +65,7 @@ int UTestActorComponent::OverFuna()
 {
 	FVector Vec;
 	OverFunb(Vec);
-	UE_LOG(LogTest, Log, TEXT("vector:%f,%f,%f\n%d"), Vec.X, Vec.Y, Vec.Z, PublicPropTwo);
+	UE_LOG(LogTestActor, Log, TEXT("vector:%f,%f,%f\n%d"), Vec.X, Vec.Y, Vec.Z, PublicPropTwo);
 	return 1;
 }
 

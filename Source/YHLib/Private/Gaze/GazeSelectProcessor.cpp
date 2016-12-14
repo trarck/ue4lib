@@ -2,11 +2,12 @@
 
 #include "YHLibPrivatePCH.h"
 #include "GazeSelectProcessor.h"
+#include "GazeDefine.h"
 
 #include "RayInput.h"
 #include "RayInteractiveComponent.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogRayCaster, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogGazeSelectProcessor, Log, All);
 
 // Sets default values for this component's properties
 UGazeSelectProcessor::UGazeSelectProcessor()
@@ -35,7 +36,7 @@ void UGazeSelectProcessor::CreatePointerMesh()
 {
 	// Laser pointer
 	PointerMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("LaserPointerMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	PointerMeshComponent->SetupAttachment(this);
 #else
 	PointerMeshComponent->AttachParent = this;
@@ -65,10 +66,10 @@ void UGazeSelectProcessor::CreatePointerMesh()
 
 void UGazeSelectProcessor::CreateHoverMesh()
 {
-	UE_LOG(LogRayCaster, Log, TEXT("Create Hover Mesh"));
+	UE_LOG(LogGazeSelectProcessor, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
 	HoverMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("HoverMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	HoverMeshComponent->SetupAttachment(this);
 #else
 	HoverMeshComponent->AttachParent = this;
@@ -98,7 +99,7 @@ void UGazeSelectProcessor::CreateHoverMesh()
 
 void UGazeSelectProcessor::LoadFromChildren()
 {
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
 #else
 	const TArray<USceneComponent*>& Children = this->AttachChildren;
@@ -126,7 +127,7 @@ void UGazeSelectProcessor::LoadFromChildren()
 			UMaterialInterface* HoverMaterialInst = HoverMeshComponent->GetMaterial(0);
 			if (HoverMaterialInst)
 			{
-				UE_LOG(LogRayCaster, Log, TEXT("Have Hover Material"));
+				UE_LOG(LogGazeSelectProcessor, Log, TEXT("Have Hover Material"));
 				HoverMID = UMaterialInstanceDynamic::Create(HoverMaterialInst, GetTransientPackage());
 				if (HoverMID)
 				{
@@ -207,7 +208,7 @@ void UGazeSelectProcessor::ProcessRayHit(bool bHit, const FVector&  Start, const
 		Rotator.Pitch -= 90;
 		PointerMeshComponent->SetWorldRotation(Rotator);
 
-		//UE_LOG(LogRayCaster, Log, TEXT("bHit:%d"), bHit);
+		//UE_LOG(LogGazeSelectProcessor, Log, TEXT("bHit:%d"), bHit);
 		FVector PointPosition = End;
 
 		if (bHit)
@@ -308,7 +309,7 @@ void UGazeSelectProcessor::ProcessRayHit(bool bHit, const FVector&  Start, const
 
 void UGazeSelectProcessor::StartStay(bool bShowHover)
 {
-	//UE_LOG(LogRayCaster, Log, TEXT("StartStay"));
+	//UE_LOG(LogGazeSelectProcessor, Log, TEXT("StartStay"));
 	State =EGazeState::Stay;
 	Elapsed = 0;
 	if (bShowHover) 
@@ -321,7 +322,7 @@ void UGazeSelectProcessor::EndHover()
 {
 	if(State == EGazeState::None) return;
 	
-	//UE_LOG(LogRayCaster, Log, TEXT("EndHover state:%d"),(int)State);
+	//UE_LOG(LogGazeSelectProcessor, Log, TEXT("EndHover state:%d"),(int)State);
 	if (State >=EGazeState::Hover)
 	{
 		HoverMeshComponent->SetVisibility(false);

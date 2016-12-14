@@ -3,7 +3,9 @@
 #pragma once
 
 #include "Engine.h"
+#include "GazeDefine.h"
 #include "RayInput.generated.h"
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FProcessRaySignature,bool,bHit,const FVector&,Start,const FVector&,End ,const FHitResult&, HitResult, bool, bBeginHit,bool,bHaveRay);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPressKeySignature, const FKey& ,Key, bool ,bRepeat);

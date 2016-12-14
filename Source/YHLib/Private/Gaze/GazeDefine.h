@@ -1,8 +1,16 @@
 #pragma once
 #include "Engine.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 #if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=13
 #define USE_NEW_INPUT_SYSTEM 1
 #else
 #define USE_NEW_INPUT_SYSTEM 0
 #endif //ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=13
+
+//ENGINE_VERSION_EG_412
+#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#define ENGINE_VERSION_EG_412 1
+#else
+#define ENGINE_VERSION_EG_412 0
+#endif //ENGINE_VERSION_EG_412

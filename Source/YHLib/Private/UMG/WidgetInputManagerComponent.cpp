@@ -4,6 +4,8 @@
 #include "WidgetInputManagerComponent.h"
 
 #include "WidgetComponent.h"
+
+#include "Gaze/GazeDefine.h"
 #include "Gaze/RayInput.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWidgetGaze, Log, All);
@@ -171,6 +173,7 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
 
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), bRepeat, KeyCode, CharCode);
+	UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]OnKeyDown before %s,KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
 	bool DownResult = FSlateApplication::Get().ProcessKeyDownEvent(KeyEvent);
 
 	if (CharCodePtr)
@@ -236,7 +239,7 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);	
 #endif //USE_NEW_INPUT_SYSTEM
-	//UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
+	UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
 
 	FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
 	//UE_LOG(LogWidgetGaze, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());

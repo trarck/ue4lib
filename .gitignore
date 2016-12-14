@@ -71,3 +71,4 @@ DerivedDataCache/*
 # Plugins
 Plugins/**/Intermediate/*
 !Plugins/**/Binaries/**/*
+/Docs/内容结构和命名/Assets Naming Convention - Epic Wiki

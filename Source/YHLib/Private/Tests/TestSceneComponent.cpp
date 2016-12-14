@@ -2,6 +2,7 @@
 
 #include "YHLibPrivatePCH.h"
 #include "TestSceneComponent.h"
+#include "Gaze/GazeDefine.h"
 
 // Sets default values for this component's properties
 UTestSceneComponent::UTestSceneComponent()
@@ -21,7 +22,7 @@ void UTestSceneComponent::CreateComponents()
 	// Laser pointer
 	{
 		LaserPointerMeshComponent = NewObject<UStaticMeshComponent>(Owner, TEXT("LaserPointerMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 		LaserPointerMeshComponent->SetupAttachment(this);
 #else
 		LaserPointerMeshComponent->AttachParent = this;
@@ -60,7 +61,7 @@ void UTestSceneComponent::CreateComponents()
 	// Hover cue for laser pointer
 	{
 		HoverMeshComponent = NewObject<UStaticMeshComponent>(Owner,TEXT("HoverMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 		HoverMeshComponent->SetupAttachment(this);
 #else
 		HoverMeshComponent->AttachParent = this;
@@ -78,7 +79,7 @@ void UTestSceneComponent::CreateComponents()
 		// Add a light!
 		{
 			HoverPointLightComponent = NewObject<UPointLightComponent>(Owner,TEXT("HoverPointLightComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 			HoverPointLightComponent->SetupAttachment(HoverMeshComponent);
 #else
 			HoverPointLightComponent->AttachParent = this;

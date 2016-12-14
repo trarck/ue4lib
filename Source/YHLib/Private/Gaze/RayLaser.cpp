@@ -2,7 +2,7 @@
 
 #include "YHLibPrivatePCH.h"
 #include "RayLaser.h"
-
+#include "GazeDefine.h"
 #include "RayInput.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRayLaser, Log, All);
@@ -34,7 +34,7 @@ void URayLaser::CreateLaserPointerMesh()
 
 	// Laser pointer
 	LaserPointerMeshComponent = NewObject<UStaticMeshComponent>(Owner, TEXT("LaserPointerMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	LaserPointerMeshComponent->SetupAttachment(this);
 #else
 	LaserPointerMeshComponent->AttachParent = this;
@@ -77,7 +77,7 @@ void URayLaser::CreateHoverMesh()
 	UE_LOG(LogRayLaser, Log, TEXT("Create Hover Mesh"));
 	// Hover cue for laser pointer
 	HoverMeshComponent = NewObject<UStaticMeshComponent>(GetOwner(), TEXT("HoverMeshComponent"));
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	HoverMeshComponent->SetupAttachment(this);
 #else
 	HoverMeshComponent->AttachParent=this;
@@ -104,7 +104,7 @@ void URayLaser::CreateHoverPointLight()
 
 	if (HoverMeshComponent)
 	{
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 		HoverPointLightComponent->SetupAttachment(HoverMeshComponent);
 #else
 		HoverPointLightComponent->AttachParent = HoverMeshComponent;
@@ -123,7 +123,7 @@ void URayLaser::CreateHoverPointLight()
 
 void URayLaser::LoadFromChildren()
 {
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 	const TArray<USceneComponent*>& Children = GetAttachChildren();
 #else
 	const TArray<USceneComponent*>& Children = AttachChildren;
@@ -145,7 +145,7 @@ void URayLaser::LoadFromChildren()
 
 	if (HoverMeshComponent)
 	{
-#if ENGINE_MAJOR_VERSION ==4 && ENGINE_MINOR_VERSION >=12
+#if ENGINE_VERSION_EG_412
 		const TArray<USceneComponent*>& HoverChildren = HoverMeshComponent->GetAttachChildren();
 #else
 		const TArray<USceneComponent*>& HoverChildren = HoverMeshComponent->AttachChildren;

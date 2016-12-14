@@ -4,7 +4,7 @@
 #include "TestOverrideComponent.h"
 
 
-DEFINE_LOG_CATEGORY_STATIC(LogTest, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogTestOverride, Log, All);
 
 // Sets default values for this component's properties
 UTestOverrideComponent::UTestOverrideComponent()
@@ -13,7 +13,7 @@ UTestOverrideComponent::UTestOverrideComponent()
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = false;
 	PrimaryComponentTick.bCanEverTick = false;
-	UE_LOG(LogTest, Log, TEXT("TestOverrideComponent::Construct"));
+	UE_LOG(LogTestOverride, Log, TEXT("TestOverrideComponent::Construct"));
 	// ...
 }
 
@@ -21,7 +21,7 @@ int UTestOverrideComponent::OverFuna()
 {
 	FVector Vec;
 	OverFunb(Vec);
-	UE_LOG(LogTest, Log, TEXT("vector:%f,%f,%f"), Vec.X, Vec.Y, Vec.Z);
+	UE_LOG(LogTestOverride, Log, TEXT("vector:%f,%f,%f"), Vec.X, Vec.Y, Vec.Z);
 	return 1;
 }
 

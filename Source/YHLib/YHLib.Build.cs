@@ -41,7 +41,8 @@ public class YHLib : ModuleRules
                 "Slate",
                 "SlateCore",
                 "InputCore",
-                "UMG"
+                "UMG",
+				"AIModule"
 				// ... add private dependencies that you statically link with here ...	
 			}
             );
