@@ -199,7 +199,7 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent());
+	WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent);
 } 
 
 void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
@@ -214,7 +214,7 @@ void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), false, KeyCode, CharCode);
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent());
+	WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent);
 }
 
 void UWidgetInputManagerComponent::OnProcessKeyChar(const FString& Characters, bool bRepeat)
@@ -257,9 +257,8 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 
 	//FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
 	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, KeyEvent());
+	WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, PointerEvent);
 }
 
 void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
@@ -295,9 +294,8 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 //	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
 	//FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, KeyEvent());
+	WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, PointerEvent);
 }
 
 bool UWidgetInputManagerComponent::IsHoverChanged()
