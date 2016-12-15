@@ -1,21 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+/************************************************************************/
+/*	work only  4.13 and later																			 */
+/************************************************************************/
 
 #pragma once
 
-
 #include "Engine.h"
-#include "WidgetInputManagerComponent.generated.h"
+#include "WidgetInteractionManagerComponent.generated.h"
 
 class URayInput;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UWidgetInputManagerComponent : public UActorComponent
+class UWidgetInteractionManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UWidgetInputManagerComponent();
+	UWidgetInteractionManagerComponent();
 	
 	UFUNCTION(BlueprintCallable, Category = "Gaze")
 	virtual void RegisterProcess(class URayInput* InRayInput);
@@ -110,6 +112,4 @@ protected:
 	/** Are we hovered over a widget that is hit test visible? */
 	UPROPERTY(Transient)
 	bool bIsHoveredWidgetHitTestVisible;
-
-
 };

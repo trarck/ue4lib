@@ -1,15 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "YHLibPrivatePCH.h"
-#include "WidgetInputManagerComponent.h"
+#include "WidgetInteractionManagerComponent.h"
 
 #include "WidgetComponent.h"
-
 #include "Gaze/GazeDefine.h"
 #include "Gaze/RayInput.h"
-
-DEFINE_LOG_CATEGORY_STATIC(LogWidgetInputManagerComponent, Log, All);
-
 
 #if !USE_NEW_INPUT_SYSTEM
 struct FGazePointerEvent : public FPointerEvent
@@ -31,8 +27,10 @@ public:
 	}
 };
 #endif
+DEFINE_LOG_CATEGORY_STATIC(LogWidgetInteractionManagerComponent, Log, All);
+
 // Sets default values for this component's properties
-UWidgetInputManagerComponent::UWidgetInputManagerComponent()
+UWidgetInteractionManagerComponent::UWidgetInteractionManagerComponent()
 	:bWidgetChange(false),
 	bIsHoveredWidgetInteractable(false),
 	bIsHoveredWidgetFocusable(false),
@@ -46,19 +44,19 @@ UWidgetInputManagerComponent::UWidgetInputManagerComponent()
 	// ...
 }
 
-void UWidgetInputManagerComponent::RegisterProcess(class URayInput* InRayInput)
+void UWidgetInteractionManagerComponent::RegisterProcess(class URayInput* InRayInput)
 {
-	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("RegisterProcess"));
+	//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("RegisterProcess"));
 	//remove listener from old
 	if (RayInput && RayInput->IsValidLowLevel())
 	{
-		//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("RegisterProcess remove old"));
-		RayInput->OnProcessRay.RemoveDynamic(this, &UWidgetInputManagerComponent::ProcessRayHit);
-		RayInput->OnPressKey.RemoveDynamic(this, &UWidgetInputManagerComponent::OnKeyDown);
-		RayInput->OnReleaseKey.RemoveDynamic(this, &UWidgetInputManagerComponent::OnKeyUp);
-		RayInput->OnSendKeyChar.RemoveDynamic(this, &UWidgetInputManagerComponent::OnProcessKeyChar);
-		RayInput->OnPressPointerKey.RemoveDynamic(this, &UWidgetInputManagerComponent::OnPressPointerKey);
-		RayInput->OnReleasePointerKey.RemoveDynamic(this, &UWidgetInputManagerComponent::OnReleasePointerKey);
+		//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("RegisterProcess remove old"));
+		RayInput->OnProcessRay.RemoveDynamic(this, &UWidgetInteractionManagerComponent::ProcessRayHit);
+		RayInput->OnPressKey.RemoveDynamic(this, &UWidgetInteractionManagerComponent::OnKeyDown);
+		RayInput->OnReleaseKey.RemoveDynamic(this, &UWidgetInteractionManagerComponent::OnKeyUp);
+		RayInput->OnSendKeyChar.RemoveDynamic(this, &UWidgetInteractionManagerComponent::OnProcessKeyChar);
+		RayInput->OnPressPointerKey.RemoveDynamic(this, &UWidgetInteractionManagerComponent::OnPressPointerKey);
+		RayInput->OnReleasePointerKey.RemoveDynamic(this, &UWidgetInteractionManagerComponent::OnReleasePointerKey);
 	}
 
 	RayInput = InRayInput;
@@ -66,17 +64,17 @@ void UWidgetInputManagerComponent::RegisterProcess(class URayInput* InRayInput)
 	//register RayInput event 
 	if (RayInput)
 	{
-		//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("RegisterProcess register new"));
-		RayInput->OnProcessRay.AddDynamic(this, &UWidgetInputManagerComponent::ProcessRayHit);
-		RayInput->OnPressKey.AddDynamic(this, &UWidgetInputManagerComponent::OnKeyDown);
-		RayInput->OnReleaseKey.AddDynamic(this, &UWidgetInputManagerComponent::OnKeyUp);
-		RayInput->OnSendKeyChar.AddDynamic(this, &UWidgetInputManagerComponent::OnProcessKeyChar);
-		RayInput->OnPressPointerKey.AddDynamic(this, &UWidgetInputManagerComponent::OnPressPointerKey);
-		RayInput->OnReleasePointerKey.AddDynamic(this, &UWidgetInputManagerComponent::OnReleasePointerKey);
+		//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("RegisterProcess register new"));
+		RayInput->OnProcessRay.AddDynamic(this, &UWidgetInteractionManagerComponent::ProcessRayHit);
+		RayInput->OnPressKey.AddDynamic(this, &UWidgetInteractionManagerComponent::OnKeyDown);
+		RayInput->OnReleaseKey.AddDynamic(this, &UWidgetInteractionManagerComponent::OnKeyUp);
+		RayInput->OnSendKeyChar.AddDynamic(this, &UWidgetInteractionManagerComponent::OnProcessKeyChar);
+		RayInput->OnPressPointerKey.AddDynamic(this, &UWidgetInteractionManagerComponent::OnPressPointerKey);
+		RayInput->OnReleasePointerKey.AddDynamic(this, &UWidgetInteractionManagerComponent::OnReleasePointerKey);
 	}
 }
 
-void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit, bool bHaveRay)
+void UWidgetInteractionManagerComponent::ProcessRayHit(bool bHit, const FVector&  Start, const FVector& End, const FHitResult& HitResult, bool bBeginHit, bool bHaveRay)
 {
 	bIsHoveredWidgetInteractable = false;
 	bIsHoveredWidgetFocusable = false;
@@ -128,7 +126,7 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 #endif //USE_NEW_INPUT_SYSTEM
 	if (WidgetPathUnderFinger.IsValid())
 	{
-		//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("move"));
+		//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("move"));
 		check(HoveredWidgetComponent);
 		LastWigetPath = WidgetPathUnderFinger;
 
@@ -136,7 +134,7 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 	}
 	else
 	{
-		//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("empty"));
+		//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("empty"));
 		FWidgetPath EmptyWidgetPath;
 		FSlateApplication::Get().RoutePointerMoveEvent(EmptyWidgetPath, PointerEvent, false);
 
@@ -185,7 +183,7 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 	}
 }
 
-void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
+void UWidgetInteractionManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 {
 	const uint32* KeyCodePtr;
 	const uint32* CharCodePtr;
@@ -195,14 +193,17 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
 
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), bRepeat, KeyCode, CharCode);
-	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]OnKeyDown before %s,KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
+	UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("[%llu]OnKeyDown before %s:KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
+	bool DownResult = FSlateApplication::Get().ProcessKeyDownEvent(KeyEvent);
+	UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("[%llu]OnKeyDown after %s:KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
+	if (CharCodePtr)
+	{
+		FCharacterEvent CharacterEvent(CharCode, ModifierKeys, RayInput->GetUserIndex(), bRepeat);
+		FSlateApplication::Get().ProcessKeyCharEvent(CharacterEvent);
+	}
+}
 
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent());
-} 
-
-void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
+void UWidgetInteractionManagerComponent::OnKeyUp(const FKey& Key)
 {
 	const uint32* KeyCodePtr;
 	const uint32* CharCodePtr;
@@ -212,17 +213,23 @@ void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
 	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
 
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), false, KeyCode, CharCode);
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent());
+	FSlateApplication::Get().ProcessKeyUpEvent(KeyEvent);
 }
 
-void UWidgetInputManagerComponent::OnProcessKeyChar(const FString& Characters, bool bRepeat)
+void UWidgetInteractionManagerComponent::OnProcessKeyChar(const FString& Characters, bool bRepeat)
 {
+	bool bProcessResult = false;
 
+	for (int32 CharIndex = 0; CharIndex < Characters.Len(); CharIndex++)
+	{
+		TCHAR CharKey = Characters[CharIndex];
+
+		FCharacterEvent CharacterEvent(CharKey, ModifierKeys, RayInput->GetUserIndex(), bRepeat);
+		bProcessResult |= FSlateApplication::Get().ProcessKeyCharEvent(CharacterEvent);
+	}
 }
 
-void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
+void UWidgetInteractionManagerComponent::OnPressPointerKey(const FKey& Key)
 {
 	if (PressedKeys.Contains(Key))
 	{
@@ -253,16 +260,13 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);
 #endif //USE_NEW_INPUT_SYSTEM
-	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
+	UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s:userindex:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
 
-	//FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
-	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, KeyEvent());
+	FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
+	//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());
 }
 
-void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
+void UWidgetInteractionManagerComponent::OnReleasePointerKey(const FKey& Key)
 {
 	if (!PressedKeys.Contains(Key))
 	{
@@ -292,40 +296,37 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);
 #endif
-	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
-//	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
-	//FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, KeyEvent());
+	//UE_LOG(LogWidgetInteractionManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
+	//	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
+	FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
 }
 
-bool UWidgetInputManagerComponent::IsHoverChanged()
+bool UWidgetInteractionManagerComponent::IsHoverChanged()
 {
 	return bWidgetChange;
 }
 
-UWidgetComponent* UWidgetInputManagerComponent::GetHoveredWidgetComponent() const
+UWidgetComponent* UWidgetInteractionManagerComponent::GetHoveredWidgetComponent() const
 {
 	return HoveredWidgetComponent;
 }
 
-bool UWidgetInputManagerComponent::IsOverInteractableWidget() const
+bool UWidgetInteractionManagerComponent::IsOverInteractableWidget() const
 {
 	return bIsHoveredWidgetInteractable;
 }
 
-bool UWidgetInputManagerComponent::IsOverFocusableWidget() const
+bool UWidgetInteractionManagerComponent::IsOverFocusableWidget() const
 {
 	return bIsHoveredWidgetFocusable;
 }
 
-bool UWidgetInputManagerComponent::IsOverHitTestVisibleWidget() const
+bool UWidgetInteractionManagerComponent::IsOverHitTestVisibleWidget() const
 {
 	return bIsHoveredWidgetHitTestVisible;
 }
 
-const FWeakWidgetPath& UWidgetInputManagerComponent::GetHoveredWidgetPath() const
+const FWeakWidgetPath& UWidgetInteractionManagerComponent::GetHoveredWidgetPath() const
 {
 	return LastWigetPath;
 }
