@@ -187,6 +187,11 @@ void UWidgetInputManagerComponent::ProcessRayHit(bool bHit, const FVector&  Star
 
 void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 {
+	if (!LastWigetPath.IsValid())
+	{
+		return;
+	}
+
 	const uint32* KeyCodePtr;
 	const uint32* CharCodePtr;
 	FInputKeyManager::Get().GetCodesFromKey(Key, KeyCodePtr, CharCodePtr);
@@ -204,6 +209,11 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 
 void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
 {
+	if (!LastWigetPath.IsValid())
+	{
+		return;
+	}
+
 	const uint32* KeyCodePtr;
 	const uint32* CharCodePtr;
 	FInputKeyManager::Get().GetCodesFromKey(Key, KeyCodePtr, CharCodePtr);
@@ -228,9 +238,16 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 	{
 		return;
 	}
+
 	PressedKeys.Add(Key);
 
+	if (!LastWigetPath.IsValid())
+	{
+		return;
+	}
+
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
+	PointerKeyWigetPath = LastWigetPath;
 
 #if USE_NEW_INPUT_SYSTEM
 	FPointerEvent PointerEvent(
@@ -254,9 +271,6 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		ModifierKeys);
 #endif //USE_NEW_INPUT_SYSTEM
 	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
-
-	//FReply Reply = FSlateApplication::Get().RoutePointerDownEvent(WidgetPathUnderFinger, PointerEvent);
-	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey after %s"), GFrameCounter, *Key.GetDisplayName().ToString());
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
 	WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, PointerEvent);
 }
@@ -269,7 +283,12 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 	}
 	PressedKeys.Remove(Key);
 
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
+	if (!PointerKeyWigetPath.IsValid())
+	{
+		return;
+	}
+
+	FWidgetPath WidgetPathUnderFinger = PointerKeyWigetPath.ToWidgetPath();
 #if USE_NEW_INPUT_SYSTEM
 	FPointerEvent PointerEvent(
 		RayInput->GetUserIndex(),
@@ -291,9 +310,7 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);
 #endif
-	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
-//	ActiveWidgetAndPointer.Widget->OnMouseButtonUp(ActiveWidgetAndPointer.Geometry, KeyEvent);
-	//FSlateApplication::Get().RoutePointerUpEvent(WidgetPathUnderFinger, PointerEvent);
+	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
 	WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, PointerEvent);
 }

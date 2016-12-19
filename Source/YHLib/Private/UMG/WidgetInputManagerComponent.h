@@ -81,6 +81,8 @@ protected:
 
 	FWeakWidgetPath LastWigetPath;
 
+	FWeakWidgetPath PointerKeyWigetPath;
+
 	/** The modifier keys to simulate during key presses. */
 	FModifierKeysState ModifierKeys;
 
