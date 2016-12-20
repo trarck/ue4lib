@@ -205,6 +205,7 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
 	WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent);
+
 } 
 
 void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
@@ -266,13 +267,23 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		LocalHitLocation,
 		LastLocalHitLocation,
 		PressedKeys,
-		FKey(),
+		Key,
 		0.0f,
 		ModifierKeys);
 #endif //USE_NEW_INPUT_SYSTEM
 	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, PointerEvent);
+	
+	FReply Reply=FReply::Unhandled();
+	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
+	{
+		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
+		Reply = WidgetAndPointer.Widget->OnMouseButtonDown(WidgetAndPointer.Geometry, PointerEvent);
+		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &PointerEvent, RayInput->GetUserIndex());
+		if (Reply.IsEventHandled())
+		{
+			break;
+		}
+	}
 }
 
 void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
@@ -306,13 +317,23 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 		LocalHitLocation,
 		LastLocalHitLocation,
 		PressedKeys,
-		FKey(),
+		Key,
 		0.0f,
 		ModifierKeys);
 #endif
 	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, PointerEvent);
+	
+	FReply Reply = FReply::Unhandled();
+	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
+	{
+		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
+		Reply = WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, PointerEvent);
+		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &PointerEvent, RayInput->GetUserIndex());
+		if (Reply.IsEventHandled())
+		{
+			break;
+		}
+	}
 }
 
 bool UWidgetInputManagerComponent::IsHoverChanged()
