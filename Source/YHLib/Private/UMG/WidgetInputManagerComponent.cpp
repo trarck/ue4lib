@@ -272,7 +272,7 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		ModifierKeys);
 #endif //USE_NEW_INPUT_SYSTEM
 	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
-	
+	//不使用RoutePointerDownEvent。在4.13版本以下，RoutePointerDownEvent处理 keyboard focus时没有中断，而处理所有的widget的focus.
 	FReply Reply=FReply::Unhandled();
 	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
 	{
