@@ -203,9 +203,17 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]OnKeyDown before %s,KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
 
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent);
-
+	FReply Reply=FReply::Unhandled();
+	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
+	{
+		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
+		Reply = WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent);
+		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &KeyEvent, RayInput->GetUserIndex());
+		if (Reply.IsEventHandled())
+		{
+			break;
+		}
+	}
 } 
 
 void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
@@ -223,9 +231,18 @@ void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
 	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
 
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), false, KeyCode, CharCode);
-	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
-	FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets.Last();
-	WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent);
+	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();	
+	FReply Reply=FReply::Unhandled();
+	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
+	{
+		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
+		Reply = WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent);
+		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &KeyEvent, RayInput->GetUserIndex());
+		if (Reply.IsEventHandled())
+		{
+			break;
+		}
+	}
 }
 
 void UWidgetInputManagerComponent::OnProcessKeyChar(const FString& Characters, bool bRepeat)
