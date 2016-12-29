@@ -42,7 +42,7 @@ void UGazeProcessor::CreatePointerMesh()
 	PointerMeshComponent->RegisterComponent();
 
 
-	UStaticMesh* LaserPointerMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Meshes/Geometry/SmallQuad"));
+	UStaticMesh* LaserPointerMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/YHLib/Meshes/Geometry/SM_Quad"));
 	if (LaserPointerMesh != nullptr)
 	{
 		PointerMeshComponent->SetStaticMesh(LaserPointerMesh);
@@ -51,7 +51,7 @@ void UGazeProcessor::CreatePointerMesh()
 	PointerMeshComponent->SetMobility(EComponentMobility::Movable);
 	PointerMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	UMaterialInstance* LaserPointerMaterialInst = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/Materials/CirclelInst"));
+	UMaterialInstance* LaserPointerMaterialInst = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/Materials/Radial/MI_Circle"));
 	if (LaserPointerMaterialInst)
 	{
 		PointerMID = UMaterialInstanceDynamic::Create(LaserPointerMaterialInst, GetTransientPackage());
@@ -74,7 +74,7 @@ void UGazeProcessor::CreateHoverMesh()
 #endif
 	HoverMeshComponent->RegisterComponent();
 
-	UStaticMesh* HoverMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Meshes/Geometry/Quad"));
+	UStaticMesh* HoverMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/YHLib/Meshes/Geometry/SM_Quad"));
 	if (HoverMesh)
 	{
 		HoverMeshComponent->SetStaticMesh(HoverMesh);
@@ -84,7 +84,7 @@ void UGazeProcessor::CreateHoverMesh()
 	HoverMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HoverMeshComponent->SetVisibility(false);
 
-	UMaterialInstance* HoverMaterialInst = LoadObject<UMaterialInstance>(nullptr, TEXT("/Game/Materials/Radial/RadialRing"));
+	UMaterialInstance* HoverMaterialInst = LoadObject<UMaterialInstance>(nullptr, TEXT("/YHLib/Materials/Radial/MI_RadialRing"));
 	if (HoverMaterialInst)
 	{
 		HoverMID = UMaterialInstanceDynamic::Create(HoverMaterialInst, GetTransientPackage());
