@@ -7,30 +7,10 @@
 
 #include "Gaze/GazeDefine.h"
 #include "Gaze/RayInput.h"
+#include "GazePointerEvent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWidgetInputManagerComponent, Log, All);
 
-
-#if !USE_NEW_INPUT_SYSTEM
-struct FGazePointerEvent : public FPointerEvent
-{
-public:
-	FGazePointerEvent(
-		uint32 InUserIndex,
-		uint32 InPointerIndex,
-		const FVector2D& InScreenSpacePosition,
-		const FVector2D& InLastScreenSpacePosition,
-		const TSet<FKey>& InPressedButtons,
-		FKey InEffectingButton,
-		float InWheelDelta,
-		const FModifierKeysState& InModifierKeys
-	)
-		: FPointerEvent(InPointerIndex, InScreenSpacePosition, InLastScreenSpacePosition, InPressedButtons, InEffectingButton, InWheelDelta, InModifierKeys)
-	{
-		UserIndex = InUserIndex;
-	}
-};
-#endif
 // Sets default values for this component's properties
 UWidgetInputManagerComponent::UWidgetInputManagerComponent()
 	:bWidgetChange(false),
@@ -200,7 +180,7 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	uint32 CharCode = CharCodePtr ? *CharCodePtr : 0;
 
 	FKeyEvent KeyEvent(Key, ModifierKeys, RayInput->GetUserIndex(), bRepeat, KeyCode, CharCode);
-	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]OnKeyDown before %s,KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
+	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]OnKeyDown before %s,KeyCode:%d,CharCode:%d"), GFrameCounter, *Key.GetDisplayName().ToString(), KeyCode, CharCode);
 
 	FWidgetPath WidgetPathUnderFinger = LastWigetPath.ToWidgetPath();
 	FReply Reply=FReply::Unhandled();
@@ -208,7 +188,6 @@ void UWidgetInputManagerComponent::OnKeyDown(const FKey& Key, bool bRepeat)
 	{
 		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
 		Reply = WidgetAndPointer.Widget->OnKeyDown(WidgetAndPointer.Geometry, KeyEvent);
-		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &KeyEvent, RayInput->GetUserIndex());
 		if (Reply.IsEventHandled())
 		{
 			break;
@@ -237,7 +216,6 @@ void UWidgetInputManagerComponent::OnKeyUp(const FKey& Key)
 	{
 		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
 		Reply = WidgetAndPointer.Widget->OnKeyUp(WidgetAndPointer.Geometry, KeyEvent);
-		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &KeyEvent, RayInput->GetUserIndex());
 		if (Reply.IsEventHandled())
 		{
 			break;
@@ -288,7 +266,7 @@ void UWidgetInputManagerComponent::OnPressPointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);
 #endif //USE_NEW_INPUT_SYSTEM
-	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
+	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]PressPointerKey before %s,userIndex:%d"), GFrameCounter,*Key.GetDisplayName().ToString(), PointerEvent.GetUserIndex());
 	//不使用RoutePointerDownEvent。在4.13版本以下，RoutePointerDownEvent处理 keyboard focus时没有中断，而处理所有的widget的focus.
 	FReply Reply=FReply::Unhandled();
 	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
@@ -338,14 +316,18 @@ void UWidgetInputManagerComponent::OnReleasePointerKey(const FKey& Key)
 		0.0f,
 		ModifierKeys);
 #endif
-	UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
+	//UE_LOG(LogWidgetInputManagerComponent, Log, TEXT("[%llu]ReleasePointerKey before %s"), GFrameCounter,*Key.GetDisplayName().ToString());
 	
 	FReply Reply = FReply::Unhandled();
 	for (int WidgetIndex = WidgetPathUnderFinger.Widgets.Num() - 1; WidgetIndex >= 0; --WidgetIndex)
 	{
 		FArrangedWidget& WidgetAndPointer = WidgetPathUnderFinger.Widgets[WidgetIndex];
 		Reply = WidgetAndPointer.Widget->OnMouseButtonUp(WidgetAndPointer.Geometry, PointerEvent);
-		FSlateApplication::Get().ProcessReply(WidgetPathUnderFinger, Reply, nullptr, &PointerEvent, RayInput->GetUserIndex());
+		//使用空的WidgetPath,避免在ProccessReply的时候调用PlatformApplication->SetHighPrecisionMouseMode(false, nullptr);	PlatformApplication->SetCapture(nullptr);
+		//调用了上面两句后，鼠标会被限制在一定范围。
+		//而ProcessReply里仅仅有用的是MouseCaptor.InvalidateCaptureForPointer(UserIndex, PointerIndex);
+		FWidgetPath EmptyWidgetPath;
+		FSlateApplication::Get().ProcessReply(EmptyWidgetPath, Reply, nullptr, &PointerEvent, RayInput->GetUserIndex());
 		if (Reply.IsEventHandled())
 		{
 			break;
