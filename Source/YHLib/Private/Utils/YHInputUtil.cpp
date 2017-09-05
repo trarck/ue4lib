@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "YHLibPrivatePCH.h"
 #include "YHInputUtil.h"
-
 #include "Engine/InputDelegateBinding.h"
 #include "Components/InputComponent.h"
 

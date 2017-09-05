@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
 
 struct FGazePointerEvent : public FPointerEvent
 {

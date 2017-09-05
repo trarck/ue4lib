@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "TestOverrideComponent.generated.h"
 
 

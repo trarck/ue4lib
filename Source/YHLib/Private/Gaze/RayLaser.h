@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
+#include "Components/SceneComponent.h"
+#include "Components/PointLightComponent.h"
 #include "RayLaser.generated.h"
 
 

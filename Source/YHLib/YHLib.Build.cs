@@ -4,10 +4,11 @@ using UnrealBuildTool;
 
 public class YHLib : ModuleRules
 {
-	public YHLib(TargetInfo Target)
+	public YHLib(ReadOnlyTargetRules Target):base(Target)
 	{
-		
-		PublicIncludePaths.AddRange(
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicIncludePaths.AddRange(
 			new string[] {
 				"YHLib/Public"
 				// ... add public include paths required here ...
@@ -26,8 +27,7 @@ public class YHLib : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
-				
+                "Core"
 				// ... add other public dependencies that you statically link with here ...
 			}
             );
@@ -36,13 +36,15 @@ public class YHLib : ModuleRules
         PrivateDependencyModuleNames.AddRange(
             new string[]
             {
-                "CoreUObject",
-                "Engine",
+                "CoreUObject",                             
+				"Engine",
                 "Slate",
                 "SlateCore",
                 "InputCore",
                 "UMG",
-				"AIModule"
+				"AIModule",
+                "RenderCore",
+                "Renderer"
 				// ... add private dependencies that you statically link with here ...	
 			}
             );
@@ -53,5 +55,12 @@ public class YHLib : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+        if (Target.Type == TargetRules.TargetType.Editor)
+        {
+            PublicDependencyModuleNames.AddRange(new string[] {
+                "Localization"
+            });
+        }
 	}
 }

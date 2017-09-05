@@ -1,7 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
-#include "YHLibPrivatePCH.h"
-
+#include "YHLib.h"
 #define LOCTEXT_NAMESPACE "FYHLibModule"
 
 void FYHLibModule::StartupModule()

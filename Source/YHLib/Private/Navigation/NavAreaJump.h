@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
 #include "AI/Navigation/NavAreas/NavArea.h"
 #include "NavAreaJump.generated.h"
 

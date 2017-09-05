@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "Engine.h"
 #include "GazeDefine.h"
+#include "Components/ActorComponent.h"
 #include "RayInput.generated.h"
 
 

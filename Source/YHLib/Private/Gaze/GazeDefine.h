@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine.h"
+#include "CoreMinimal.h"
 #include "Runtime/Launch/Resources/Version.h"
 
 #ifndef USE_NEW_INPUT_SYSTEM

@@ -5,21 +5,22 @@ using System.Collections.Generic;
 
 public class YHLibEditorTarget : TargetRules
 {
-	public YHLibEditorTarget(TargetInfo Target)
+	public YHLibEditorTarget(TargetInfo Target):base(Target)
 	{
 		Type = TargetType.Editor;
-	}
+        ExtraModuleNames.Add("YHLib");
+    }
 
-	//
-	// TargetRules interface.
-	//
+	////
+	//// TargetRules interface.
+	////
 
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "YHLib" } );
-	}
+	//public override void SetupBinaries(
+	//	TargetInfo Target,
+	//	ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
+	//	ref List<string> OutExtraModuleNames
+	//	)
+	//{
+	//	OutExtraModuleNames.AddRange( new string[] { "YHLib" } );
+	//}
 }

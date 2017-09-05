@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "YHLibPrivatePCH.h"
 #include "RayInput.h"
 
 #include "RayInteractiveComponent.h"
@@ -17,7 +16,6 @@ URayInput::URayInput()
 	VirtualUserIndex(0),
 	PointerIndex(0)
 {
-	bWantsBeginPlay = true;
 
 	//set tick group.if use default then RayStart and RayEnd maybe the same as renderer.
 	PrimaryComponentTick.TickGroup = TG_PostUpdateWork;
