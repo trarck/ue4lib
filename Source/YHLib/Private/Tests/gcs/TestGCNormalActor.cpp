@@ -37,7 +37,7 @@ void ATestGCNormalActor::BeginPlay()
 	TwoObject = NewObject<UTestGCObject>(this, TEXT("TwoTwo"));
 	TwoObject->MyName = TEXT("TwoTwo");	
 
-	UTestGCObject* A= NewObject<UTestGCObject>(this, TEXT("AAAAA"));
+	/*UTestGCObject* A= NewObject<UTestGCObject>(this, TEXT("AAAAA"));
 	A->MyName = TEXT("AAAAA");
 	MyFirstObjs.Add(A);
 
@@ -52,7 +52,7 @@ void ATestGCNormalActor::BeginPlay()
 
 	UTestGCObject* Two = NewObject<UTestGCObject>(this, TEXT("222222"));
 	Two->MyName = TEXT("222222");
-	MySecondMaps.Add(TEXT("222222"), Two);
+	MySecondMaps.Add(TEXT("222222"), Two);*/
 }
 
 // Called every frame
