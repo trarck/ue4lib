@@ -62,5 +62,15 @@ public class YHLib : ModuleRules
                 "Localization"
             });
         }
+
+        //// Get the engine path. Ends with "Engine/"
+        //string engine_path = Path.GetFullPath(BuildConfiguration.RelativeEnginePath);
+        //// Now get the base of UE4's modules dir (could also be Developer, Editor, ThirdParty)
+        //string srcrt_path = engine_path + "Source/Runtime/";
+        //PublicIncludePaths.AddRange(
+        //    new string[] {
+        //               srcrt_path+"SlateCore/Private"
+        //    }
+        //);
 	}
 }
