@@ -23,4 +23,5 @@ public:
 	//virtual void PostInitProperties() override;	
 
 	//virtual void Serialize(FArchive& Ar) override;
+	void ChangeStaticMeshOfCulture(const FString& CultureName);
 };
